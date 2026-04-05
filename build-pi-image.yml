@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Secluso, Inc.
+# Additional terms apply; see the NOTICE file in the repository root.
+
+# Referenced from kas documentation [https://kas.readthedocs.io/en/latest/userguide/project-configuration.html]
+
+# Every file needs to contain a header, that provides kas with information
+# about the context of this file.
+header:
+  # The `version` entry in the header describes for which configuration
+  # format version this file was created for. It is used by kas to figure
+  # out if it is compatible with this file. The version is an integer that
+  # is increased on every format change.
+  version: 2
+# The machine as it is written into the `local.conf` of bitbake.
+machine: raspberrypi0-2w-64
+# The distro name as it is written into the `local.conf` of bitbake.
+distro: poky
+# We want as minimal of an image as possible to build on
+target: core-image-minimal
+repos:
+  # This entry includes the repository where the config file is located
+  # to the bblayers.conf:
+  # meta-custom: (REMOVED FOR NOW)
+
+  # Here we include a list of layers from the poky repository to the
+  # bblayers.conf:
+  poky:
+    url: "https://git.yoctoproject.org/git/poky"
+    commit: 012c062751c52c7aa05139d487eb7cb1c5ceeed4 #  scarthgap-5.0.16 (012c062751c52c7aa05139d487eb7cb1c5ceeed4)
+    layers:
+      meta:
+      meta-poky:
+      meta-yocto-bsp:
+
+  meta-openembedded:
+    url: "https://git.openembedded.org/meta-openembedded"
+    commit: 06f846a325fde423bb0a6d49d771d8c1e144d7eb # scarthgap (06f846a325fde423bb0a6d49d771d8c1e144d7eb)
+    layers:
+      meta-oe:
+      meta-python:
+      meta-networking:
+
+  meta-raspberrypi:
+    url: "https://git.yoctoproject.org/meta-raspberrypi"
+    commit: 2c646d29912dcc873469a57b1c207e1549c5094d # scarthgap (2c646d29912dcc873469a57b1c207e1549c5094d)
