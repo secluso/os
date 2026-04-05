@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Secluso, Inc.
+# Additional terms apply; see the NOTICE file in the repository root.
+
+# Took base before modification from https://github.com/agherzan/meta-raspberrypi/blob/master/wic/sdimage-raspberrypi.wks
+# Specifically: what's modified here is the inclusion of --uuid and --fsuuid parameters to pin the partition and filesystem UUID. This is to tighten reproducible builds.
+# https://docs.yoctoproject.org/ref-manual/kickstart.html specifies wks options and explanations as such
+
+# short-description: Create Raspberry Pi SD card image
+# long-description: Creates a partitioned SD card image for use with
+# Raspberry Pi. Boot files are located in the first vfat partition.
+
+# that short hex value comes from the disk signature / disk identifier in the MBR
+# fsuuid is a 32-bit hexadecimal (0xABCD1234) on /boot due to it being a vfat file system
+
+# blkid with current configuration:
+# /dev/loop6p1: SEC_TYPE="msdos" LABEL_FATBOOT="boot" LABEL="boot" UUID="ABCD-1234" BLOCK_SIZE="512" TYPE="vfat" PARTUUID="1ba0fb6d-01"
+# /dev/loop6p2: LABEL="root" UUID="59aa4d0b-2b86-4550-b711-8ee512955940" BLOCK_SIZE="1024" TYPE="ext4" PARTUUID="1ba0fb6d-02"
+
+part /boot --source bootimg-partition --uuid 19c8b09a-9511-47c5-bcfd-c7ed89dce60e --fsuuid 0xABCD1234 --ondisk mmcblk0 --fstype=vfat --label boot --active --align 4096 --size 100
+part / --source rootfs --uuid a3bbee25-b921-4c33-ad76-64b56abb3900 --fsuuid 59aa4d0b-2b86-4550-b711-8ee512955940 --ondisk mmcblk0 --fstype=ext4 --label root --align 4096

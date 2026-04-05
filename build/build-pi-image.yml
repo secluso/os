@@ -19,15 +19,15 @@ distro: poky
 # We want as minimal of an image as possible to build on
 target: core-image-minimal
 repos:
-  # This entry includes the repository where the config file is located
-  # to the bblayers.conf:
-  # meta-custom: (REMOVED FOR NOW)
+  # We create a layer for secluso-os.
+  # This allows us to use our own wic/ file. Additionally, we have conf/ if we need it.
+  secluso-os:
 
   # Here we include a list of layers from the poky repository to the
   # bblayers.conf:
   poky:
     url: "https://git.yoctoproject.org/git/poky"
-    commit: 012c062751c52c7aa05139d487eb7cb1c5ceeed4 #  scarthgap-5.0.16 (012c062751c52c7aa05139d487eb7cb1c5ceeed4)
+    commit: 012c062751c52c7aa05139d487eb7cb1c5ceeed4 # Pinned to immutable (tag: scarthgap-5.0.16) (012c062751c52c7aa05139d487eb7cb1c5ceeed4)
     layers:
       meta:
       meta-poky:
@@ -35,7 +35,7 @@ repos:
 
   meta-openembedded:
     url: "https://git.openembedded.org/meta-openembedded"
-    commit: 06f846a325fde423bb0a6d49d771d8c1e144d7eb # scarthgap (06f846a325fde423bb0a6d49d771d8c1e144d7eb)
+    commit: 06f846a325fde423bb0a6d49d771d8c1e144d7eb # Pinned to immutable (tag: scarthgap) (06f846a325fde423bb0a6d49d771d8c1e144d7eb)
     layers:
       meta-oe:
       meta-python:
@@ -43,4 +43,21 @@ repos:
 
   meta-raspberrypi:
     url: "https://git.yoctoproject.org/meta-raspberrypi"
-    commit: 2c646d29912dcc873469a57b1c207e1549c5094d # scarthgap (2c646d29912dcc873469a57b1c207e1549c5094d)
+    commit: 2c646d29912dcc873469a57b1c207e1549c5094d # Pinned to immutable (tag: scarthgap) (2c646d29912dcc873469a57b1c207e1549c5094d)
+
+# these are added to the head of the local.conf file
+local_conf_header:
+  secluso-os: |
+    # meta-raspberrypi sets WKS_FILE with a weak assignment (?=), so we don't need a force override
+    # wks is a custom configuration script used by the wic tool to define the partitioning layout
+    # override theirs with our modified version
+    WKS_FILE:raspberrypi0-2w-64 = "sdcard-raspberrypi.wks"
+    
+    # Reference: https://wiki.yoctoproject.org/wiki/Reproducible_Builds
+    # These should be default values. We re-affirm them here to be safe.
+    BUILD_REPRODUCIBLE_BINARIES = "1"
+    PYTHONHASHSEED = "0"
+    PERL_HASH_SEED = "0"
+    TZ = 'UTC'
+    SOURCE_DATE_EPOCH = "1520598896"
+    REPRODUCIBLE_TIMESTAMP_ROOTFS = "1520598896"
