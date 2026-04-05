@@ -17,5 +17,8 @@
 # /dev/loop6p1: SEC_TYPE="msdos" LABEL_FATBOOT="boot" LABEL="boot" UUID="ABCD-1234" BLOCK_SIZE="512" TYPE="vfat" PARTUUID="1ba0fb6d-01"
 # /dev/loop6p2: LABEL="root" UUID="59aa4d0b-2b86-4550-b711-8ee512955940" BLOCK_SIZE="1024" TYPE="ext4" PARTUUID="1ba0fb6d-02"
 
-part /boot --source bootimg-partition --uuid 19c8b09a-9511-47c5-bcfd-c7ed89dce60e --fsuuid 0xABCD1234 --ondisk mmcblk0 --fstype=vfat --label boot --active --align 4096 --size 100
+# For mkfs-extraopts: -S 512 is the default provided by wic.
+# --invariant is appended to maintain constants in mkfs for reproducibility: "Use constants for normally randomly generated or time based data such as volume ID and creation time." [ref: https://man7.org/linux/man-pages/man8/mkfs.fat.8.html]
+
+part /boot --source bootimg-partition --uuid 19c8b09a-9511-47c5-bcfd-c7ed89dce60e --fsuuid 0xABCD1234 --ondisk mmcblk0 --fstype=vfat --label boot --active --align 4096 --size 100 --mkfs-extraopts '-S 512 --invariant'
 part / --source rootfs --uuid a3bbee25-b921-4c33-ad76-64b56abb3900 --fsuuid 59aa4d0b-2b86-4550-b711-8ee512955940 --ondisk mmcblk0 --fstype=ext4 --label root --align 4096
