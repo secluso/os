@@ -16,8 +16,11 @@ header:
 machine: raspberrypi0-2w-64
 # The distro name as it is written into the `local.conf` of bitbake.
 distro: poky
+
 # We want as minimal of an image as possible to build on
-target: core-image-minimal
+# We use 'secluso-image-minimal' to include our own recipes on top of core-image-minimal
+# Located in recipes-core/images/secluso-pi-image-minimal.bb
+target: secluso-pi-image-minimal
 repos:
   # We create a layer for secluso-os.
   # This allows us to use our own wic/ file. Additionally, we have conf/ if we need it.
