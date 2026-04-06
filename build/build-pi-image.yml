@@ -41,8 +41,15 @@ repos:
     commit: 06f846a325fde423bb0a6d49d771d8c1e144d7eb # Pinned to immutable (tag: scarthgap) (06f846a325fde423bb0a6d49d771d8c1e144d7eb)
     layers:
       meta-oe:
+
+      # meta-networking depends on this
       meta-python:
+
+      # This is included for Wi-Fi and hotspot support
       meta-networking:
+
+      # This is included for libcamera recipe
+      meta-multimedia:
 
   meta-raspberrypi:
     url: "https://git.yoctoproject.org/meta-raspberrypi"
@@ -64,3 +71,8 @@ local_conf_header:
     TZ = 'UTC'
     SOURCE_DATE_EPOCH = "1520598896"
     REPRODUCIBLE_TIMESTAMP_ROOTFS = "1520598896"
+    
+    # We set this explicitly to 0.4.0 as that's what matches our current fork of rpicam-apps 
+    # Moreover, we have a libcaemra_0.4.0.bbappend in recipes-multimedia that overrides the SRC_URI (and SRCREV) to the Raspberry Pi patched version
+    # TODO: Update this version when we sync fork
+    PREFERRED_VERSION_libcamera = "1:0.4.0+rpt20250213"

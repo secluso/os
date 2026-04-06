@@ -12,6 +12,8 @@ inherit packagegroup
 # ${PN} is a placeholder for the package name of the current recipe
 # "Lists runtime dependencies of a package. These dependencies are other packages that must be installed in order for the package to function correctly."
 # See https://docs.yoctoproject.org/ref-manual/variables.html#rdepends for ref
+#
+# We include our custom rpicam-apps-fork (see recipes-rpicam for more info)
 RDEPENDS:${PN} = " \
-    example \
+    rpicam \
 "
