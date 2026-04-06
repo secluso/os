@@ -30,7 +30,7 @@ repos:
   # bblayers.conf:
   poky:
     url: "https://git.yoctoproject.org/git/poky"
-    commit: 012c062751c52c7aa05139d487eb7cb1c5ceeed4 # Pinned to immutable (tag: scarthgap-5.0.16) (012c062751c52c7aa05139d487eb7cb1c5ceeed4)
+    commit: 012c062751c52c7aa05139d487eb7cb1c5ceeed4 # Pinned to immutable
     layers:
       meta:
       meta-poky:
@@ -38,7 +38,7 @@ repos:
 
   meta-openembedded:
     url: "https://git.openembedded.org/meta-openembedded"
-    commit: 06f846a325fde423bb0a6d49d771d8c1e144d7eb # Pinned to immutable (tag: scarthgap) (06f846a325fde423bb0a6d49d771d8c1e144d7eb)
+    commit: 06f846a325fde423bb0a6d49d771d8c1e144d7eb # Pinned to immutable
     layers:
       meta-oe:
 
@@ -53,7 +53,7 @@ repos:
 
   meta-raspberrypi:
     url: "https://git.yoctoproject.org/meta-raspberrypi"
-    commit: 2c646d29912dcc873469a57b1c207e1549c5094d # Pinned to immutable (tag: scarthgap) (2c646d29912dcc873469a57b1c207e1549c5094d)
+    commit: 2c646d29912dcc873469a57b1c207e1549c5094d # Pinned to immutable (tag: scarthgap) (https://git.yoctoproject.org/meta-raspberrypi/commit/?h=scarthgap&id=2c646d29912dcc873469a57b1c207e1549c5094d)
 
 # these are added to the head of the local.conf file
 local_conf_header:
@@ -76,3 +76,7 @@ local_conf_header:
     # Moreover, we have a libcaemra_0.4.0.bbappend in recipes-multimedia that overrides the SRC_URI (and SRCREV) to the Raspberry Pi patched version
     # TODO: Update this version when we sync fork
     PREFERRED_VERSION_libcamera = "1:0.4.0+rpt20250213"
+    
+    # Generate a CVE report when we create an image
+    INHERIT += "cve-check"
+    require conf/distro/include/cve-extra-exclusions.inc
