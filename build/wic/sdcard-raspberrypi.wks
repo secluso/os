@@ -19,6 +19,10 @@
 
 # For mkfs-extraopts: -S 512 is the default provided by wic.
 # --invariant is appended to maintain constants in mkfs for reproducibility: "Use constants for normally randomly generated or time based data such as volume ID and creation time." [ref: https://man7.org/linux/man-pages/man8/mkfs.fat.8.html]
-
+# mmcblk0 is the primary block device name in Linux for the internal eMMC/iNAND flash storage
 part /boot --source bootimg-partition --uuid 19c8b09a-9511-47c5-bcfd-c7ed89dce60e --fsuuid 0xABCD1234 --ondisk mmcblk0 --fstype=vfat --label boot --active --align 4096 --size 100 --mkfs-extraopts '-S 512 --invariant'
 part / --source rootfs --uuid a3bbee25-b921-4c33-ad76-64b56abb3900 --fsuuid 59aa4d0b-2b86-4550-b711-8ee512955940 --ondisk mmcblk0 --fstype=ext4 --label root --align 4096
+
+# Notice that no --source is provided below. That means that its defaulted to 'empty', which fills it with zeros. This works for our purposes of having the deploy tool fill it later.
+# Right now, all we have to put in here is 'wifi_password' and 'camera_secret'. 16M gives us some extra room for more later if need be.
+part /provision --size 16M --uuid 131c42eb-25a8-4179-8498-0d5ddbda2661 --fsuuid=0xBCDE2345 --ondisk mmcblk0 --fstype=vfat --label provision --align 4096 --mkfs-extraopts '-S 512 --invariant'
