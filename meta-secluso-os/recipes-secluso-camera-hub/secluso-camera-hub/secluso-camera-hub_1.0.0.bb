@@ -21,6 +21,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 SRC_URI = "git://github.com/secluso/core.git;branch=main;protocol=https"
 SRCREV = "dc2a3d4fbc48b29641402476c17a9824b92bf019"
 
+# In meta-rust, it shows we can override CARGO_SRC_DIR to specify our intended source directory within repository [https://github.com/meta-rust/meta-rust/blob/master/classes/cargo.bbclass]
+CARGO_SRC_DIR = "camera_hub"
+
 # https://docs.yoctoproject.org/dev/ref-manual/classes.html#cargo-update-recipe-crates
 # Generate new one: `bitbake -c update_crates secluso-camera-hub` from project root
 require ${BPN}-crates.inc
