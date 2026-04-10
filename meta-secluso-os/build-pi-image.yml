@@ -1,0 +1,137 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Secluso, Inc.
+# Additional terms apply; see the NOTICE file in the repository root.
+
+# Referenced from kas documentation [https://kas.readthedocs.io/en/latest/userguide/project-configuration.html]
+
+# Every file needs to contain a header, that provides kas with information
+# about the context of this file.
+header:
+  # The `version` entry in the header describes for which configuration
+  # format version this file was created for. It is used by kas to figure
+  # out if it is compatible with this file. The version is an integer that
+  # is increased on every format change.
+  version: 2
+
+# Fingerprint obtained from https://wiki.yoctoproject.org/wiki/GPG_sign_notes_%26_git_tags
+# "Primary key fingerprint: 2AFB 13F2 8FBB B0D1 B9DA F630 87EB 3D32 FB63 1AD9"
+signers:
+  YoctoBuildandRelease:
+    fingerprint: 2AFB13F28FBBB0D1B9DAF63087EB3D32FB631AD9
+    gpg_keyserver: keyserver.ubuntu.com
+
+# The machine as it is written into the `local.conf` of bitbake.
+machine: raspberrypi0-2w-64
+# The distro name as it is written into the `local.conf` of bitbake.
+distro: poky
+
+# We want as minimal of an image as possible to build on
+# We use 'secluso-image-minimal' to include our own recipes on top of core-image-minimal
+# Located in recipes-core/images/secluso-pi-image-minimal.bb
+target: secluso-pi-image-minimal
+repos:
+  # We create a layer for secluso-os.
+  # This allows us to use our own wic/ file. Additionally, we have conf/ if we need it.
+  secluso-os:
+    layers:
+      meta-secluso-os:
+
+  # We use bitbake, openembedded-core and meta-yocto here now instead of solely "poky"
+  # https://git.yoctoproject.org/poky/commit/?id=453df63af0c857c24804271da7f55691d0ed27f8
+  # The poky repository master branch is no longer being updated.
+  # The monolithic poky source arrangement approach is no longer recommended.
+  # Thus, the recommended approach is to use indiviudal clones of bitbake, oe-core and meta-yocto (a split approach).
+  # Thus, we mirror this [https://docs.yoctoproject.org/dev/dev-manual/poky-manual-setup.html] in the kas configuration
+  bitbake:
+    url: "https://git.openembedded.org/bitbake"
+    commit: d6e45bad8e7b5bbae23307243a5e7ade147ba668 # Pinned to immutable (whinlatter) [https://git.openembedded.org/bitbake/tag/?h=yocto-5.3.3]
+    tag: yocto-5.3.3  # We additionally specify the tag to allow the signature to be verified
+    signed: true
+    allowed_signers:
+      - YoctoBuildandRelease
+    # The "." here is the root of the repository
+    # By disabling it, we tell kas we do not want the root added to bblayers.conf.
+    # Otherwise, kas would treat the repo root itself as a layer.
+    # We fetch this repo for the BitBake tool itself, not as a Yocto layer.
+    layers:
+      .: disabled
+
+  openembedded-core:
+    url: "https://git.openembedded.org/openembedded-core"
+    commit: d7d1e3068cb1bff9b3fcffb1f696ee7d6cd36ea4 # Pinned to immutable (whinlatter) [https://git.openembedded.org/openembedded-core/tag/?h=yocto-5.3.3]
+    tag: yocto-5.3.3 # We additionally specify the tag to allow the signature to be verified
+    signed: true
+    allowed_signers:
+      - YoctoBuildandRelease
+    # 'meta' is the OE-core layer directory within the openembedded-core repository
+    # It contains the core metadata / recipes that BitBake uses.
+    # See https://git.openembedded.org/openembedded-core/tree/meta
+    layers:
+      meta:
+
+  meta-yocto:
+    url: "https://git.yoctoproject.org/meta-yocto"
+    commit: 9b98ec5e6cfb6c9dc74d3c2e6304eeb274f7c487 # Pinned to immutable (whinlatter) [https://git.yoctoproject.org/meta-yocto/commit/?h=whinlatter&id=9b98ec5e6cfb6c9dc74d3c2e6304eeb274f7c487]
+    tag: yocto-5.3.3  # We additionally specify the tag to allow the signature to be verified
+    signed: true
+    allowed_signers:
+      - YoctoBuildandRelease
+    layers:
+      # Poky is Yocto Project's reference distribution / build environment
+      # meta-poky is the layer that provides Poky's reference distro metadata
+      # See https://docs.yoctoproject.org/ref-manual/terms.html#term-Poky for more information
+      meta-poky:
+
+      # Yocto reference hardware Build Support Packages (BSP) [https://docs.yoctoproject.org/bsp-guide/bsp.html]
+      meta-yocto-bsp:
+
+  # TODO: meta-raspberrypi is pinned to an immutable commit, but unlike bitbake / oe-core / meta-yocto, this is not signer-verified in kas
+  #       So we have a fixed origin but no signer-verification for source authenticity
+  #       There seems to be no current way to achieve this for this repository.
+  meta-openembedded:
+    url: "https://git.openembedded.org/meta-openembedded"
+    commit: 8bcdb0cc1dab116253b409e78fb868ced7d8397c # Pinned to immutable (whinlatter) [https://git.openembedded.org/meta-openembedded/commit/?h=whinlatter&id=8bcdb0cc1dab116253b409e78fb868ced7d8397c]
+    layers:
+      meta-oe:
+
+      # meta-networking depends on this
+      meta-python:
+
+      # This is included for Wi-Fi and hotspot support
+      meta-networking:
+
+      # This is included for libcamera recipe
+      meta-multimedia:
+
+  # TODO: meta-raspberrypi is pinned to an immutable commit, but unlike bitbake / oe-core / meta-yocto, this is not signer-verified in kas
+  #       So we have a fixed origin but no signer-verification for source authenticity
+  #       There seems to be no current way to achieve this for this repository.
+  meta-raspberrypi:
+    url: "https://git.yoctoproject.org/meta-raspberrypi"
+    commit: 469e232c77d74cb030fe8a9af4ffe9127214a29b # Pinned to immutable (tag: whinlatter) (https://git.yoctoproject.org/meta-raspberrypi/commit/?h=whinlatter&id=469e232c77d74cb030fe8a9af4ffe9127214a29b)
+
+# these are added to the head of the local.conf file
+local_conf_header:
+  secluso-os: |
+    # meta-raspberrypi sets WKS_FILE with a weak assignment (?=), so we don't need a force override
+    # wks is a custom configuration script used by the wic tool to define the partitioning layout
+    # override theirs with our modified version
+    WKS_FILE:raspberrypi0-2w-64 = "sdcard-raspberrypi.wks"
+    
+    # Reference: https://wiki.yoctoproject.org/wiki/Reproducible_Builds
+    # These should be default values. We re-affirm them here to be safe.
+    BUILD_REPRODUCIBLE_BINARIES = "1"
+    PYTHONHASHSEED = "0"
+    PERL_HASH_SEED = "0"
+    TZ = 'UTC'
+    SOURCE_DATE_EPOCH = "1520598896"
+    REPRODUCIBLE_TIMESTAMP_ROOTFS = "1520598896"
+    
+    # We set this explicitly to 0.5.2 as that's what matches our current fork of rpicam-apps 
+    # Moreover, we have a libcaemra_0.5.2.bbappend in recipes-multimedia that overrides the SRC_URI (and SRCREV) to the Raspberry Pi patched version
+    # Version taken from https://github.com/raspberrypi/libcamera/releases
+    PREFERRED_VERSION_libcamera = "1:0.5.2+rpt20250903"
+    
+    # Generate a CVE report when we create an image
+    INHERIT += "cve-check"
+    require conf/distro/include/cve-extra-exclusions.inc

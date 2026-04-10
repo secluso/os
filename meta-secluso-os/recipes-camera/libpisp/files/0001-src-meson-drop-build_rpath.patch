@@ -1,0 +1,35 @@
+From 2d5356c350553fe5487c7df1f529d56d270fc03c Mon Sep 17 00:00:00 2001
+From: jkaczman <jkzgit@pm.me>
+Date: Thu, 9 Apr 2026 17:36:22 +0000
+Subject: [PATCH] src: drop build_rpath
+
+Remove the Meson build_rpath setting from libpisp so the built shared library does not embed the source tree path in its RPATH.
+This avoids Yocto QA issues caused by build-path references in the output binary.
+
+Upstream-Status: Pending
+
+---
+ src/meson.build | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/src/meson.build b/src/meson.build
+index 6ace2ff..9bc5627 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -52,7 +52,6 @@ libpisp = library(
+     include_directories : include_directories(inc_dirs),
+     name_prefix : '',
+     install : true,
+-    build_rpath : meson.project_source_root(),
+     dependencies : pisp_deps,
+ )
+
+@@ -69,4 +68,4 @@ pkg_mod.generate(libpisp,
+
+ if get_option('examples')
+     subdir('examples')
+-endif
+\ No newline at end of file
++endif
+--
+2.43.0

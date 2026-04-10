@@ -14,7 +14,7 @@ DESCRIPTION = "This is a small suite of libcamera-based apps that aim to \
 copy the functionality of the existing \"raspicam\" apps."
 
 # Home page of rpicam-apps: https://github.com/raspberrypi/rpicam-apps
-HOMEPAGE = "https://github.com/seclusi/rpicam-apps-fork"
+HOMEPAGE = "https://github.com/secluso/rpicam-apps-fork"
 SECTION = "console/utils"
 
 # This is the native license from their repository.
@@ -24,10 +24,7 @@ file://LICENSE.secluso;md5=6d4ff442c842d1ba9eeb1a2a236c37a4"
 
 # This is our own repository for our fork (set to an immutable commit)
 SRC_URI = "git://github.com/secluso/rpicam-apps-fork.git;branch=main;protocol=https"
-SRCREV = "13d79600eb0f9f510c39055f0e683337a8a13698"
-
-# Taken from https://git.yoctoproject.org/meta-raspberrypi/tree/recipes-multimedia/libcamera-apps/rpi-libcamera-apps_git.bb?h=mickledore
-S = "${WORKDIR}/git"
+SRCREV = "db484eddae66eec82bfc10b3f1108793724157a6"
 
 # Taken from https://git.yoctoproject.org/meta-raspberrypi/tree/recipes-multimedia/libcamera-apps/rpi-libcamera-apps_git.bb?h=mickledore
 # Note: We set libcamera to 0.4.0 under PREFERRED_VERSION in the kas .yml in local_conf_header
@@ -46,7 +43,7 @@ EXTRA_OECMAKE = "\
 # This is all the files we're keeping from this recipe.
 # Note: rpicam-* are symlinks to libcamera-*
 FILES:${PN} = "\
-  /usr/lib/rpicam_app.so.1.6.0 \
+  /usr/lib/librpicam_app.so.1.9.0 \
   /usr/bin/rpicam-jpeg \
   /usr/bin/rpicam-raw \
   /usr/bin/rpicam-vid \
@@ -91,5 +88,6 @@ do_install:append() {
     rm -vrf ${D}${datadir}
 
     # We cannot have an un-versioned .so file without having a -dev prefix as it's a development symlink
-    rm -v ${D}${libdir}/rpicam_app.so
+    rm -v ${D}${libdir}/librpicam_app.so
+    rm -v ${D}${libdir}/librpicam_app.so.1
 }
