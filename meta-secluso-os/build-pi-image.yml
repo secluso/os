@@ -27,6 +27,8 @@ repos:
   # We create a layer for secluso-os.
   # This allows us to use our own wic/ file. Additionally, we have conf/ if we need it.
   secluso-os:
+    layers:
+      meta-secluso-os:
 
   # TODO: Document why we use this now instead of Poky (scarthgap -> whinlatter transition)
   bitbake:
