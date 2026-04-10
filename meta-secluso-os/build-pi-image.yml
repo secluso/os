@@ -12,6 +12,12 @@ header:
   # out if it is compatible with this file. The version is an integer that
   # is increased on every format change.
   version: 2
+
+signers:
+  YoctoBuildandRelease:
+    fingerprint: 2AFB13F28FBBB0D1B9DAF63087EB3D32FB631AD9
+    gpg_keyserver: keyserver.ubuntu.com
+
 # The machine as it is written into the `local.conf` of bitbake.
 machine: raspberrypi0-2w-64
 # The distro name as it is written into the `local.conf` of bitbake.
@@ -34,6 +40,10 @@ repos:
   bitbake:
     url: "https://git.openembedded.org/bitbake"
     commit: d6e45bad8e7b5bbae23307243a5e7ade147ba668 # Pinned to immutable (whinlatter) [https://git.openembedded.org/bitbake/tag/?h=yocto-5.3.3]
+    tag: yocto-5.3.3  # We additionally specify the tag to allow the signature to be verified
+    signed: true
+    allowed_signers:
+      - YoctoBuildandRelease
     #TODO: Document why this is necessary
     layers:
       .: disabled
@@ -41,6 +51,10 @@ repos:
   openembedded-core:
     url: "https://git.openembedded.org/openembedded-core"
     commit: d7d1e3068cb1bff9b3fcffb1f696ee7d6cd36ea4 # Pinned to immutable (whinlatter) [https://git.openembedded.org/openembedded-core/tag/?h=yocto-5.3.3]
+    tag: yocto-5.3.3 # We additionally specify the tag to allow the signature to be verified
+    signed: true
+    allowed_signers:
+      - YoctoBuildandRelease
     #TODO: Document why this is necessary
     layers:
       meta:
@@ -48,6 +62,10 @@ repos:
   meta-yocto:
     url: "https://git.yoctoproject.org/meta-yocto"
     commit: 9b98ec5e6cfb6c9dc74d3c2e6304eeb274f7c487 # Pinned to immutable (whinlatter) [https://git.yoctoproject.org/meta-yocto/commit/?h=whinlatter&id=9b98ec5e6cfb6c9dc74d3c2e6304eeb274f7c487]
+    tag: yocto-5.3.3  # We additionally specify the tag to allow the signature to be verified
+    signed: true
+    allowed_signers:
+      - YoctoBuildandRelease
     layers:
       #TODO: Document why these are needed
       meta-poky:
