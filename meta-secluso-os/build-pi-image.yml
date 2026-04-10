@@ -13,6 +13,8 @@ header:
   # is increased on every format change.
   version: 2
 
+# Fingerprint obtained from https://wiki.yoctoproject.org/wiki/GPG_sign_notes_%26_git_tags
+# "Primary key fingerprint: 2AFB 13F2 8FBB B0D1 B9DA F630 87EB 3D32 FB63 1AD9"
 signers:
   YoctoBuildandRelease:
     fingerprint: 2AFB13F28FBBB0D1B9DAF63087EB3D32FB631AD9
@@ -22,8 +24,6 @@ signers:
 machine: raspberrypi0-2w-64
 # The distro name as it is written into the `local.conf` of bitbake.
 distro: poky
-
-#TOOD: provide keys to verify signed repositories
 
 # We want as minimal of an image as possible to build on
 # We use 'secluso-image-minimal' to include our own recipes on top of core-image-minimal
@@ -36,7 +36,12 @@ repos:
     layers:
       meta-secluso-os:
 
-  # TODO: Document why we use this now instead of Poky (scarthgap -> whinlatter transition)
+  # We use bitbake, openembedded-core and meta-yocto here now instead of solely "poky"
+  # https://git.yoctoproject.org/poky/commit/?id=453df63af0c857c24804271da7f55691d0ed27f8
+  # The poky repository master branch is no longer being updated.
+  # The monolithic poky source arrangement approach is no longer recommended.
+  # Thus, the recommended approach is to use indiviudal clones of bitbake, oe-core and meta-yocto (a split approach).
+  # Thus, we mirror this [https://docs.yoctoproject.org/dev/dev-manual/poky-manual-setup.html] in the kas configuration
   bitbake:
     url: "https://git.openembedded.org/bitbake"
     commit: d6e45bad8e7b5bbae23307243a5e7ade147ba668 # Pinned to immutable (whinlatter) [https://git.openembedded.org/bitbake/tag/?h=yocto-5.3.3]
@@ -44,7 +49,10 @@ repos:
     signed: true
     allowed_signers:
       - YoctoBuildandRelease
-    #TODO: Document why this is necessary
+    # The "." here is the root of the repository
+    # By disabling it, we tell kas we do not want the root added to bblayers.conf.
+    # Otherwise, kas would treat the repo root itself as a layer.
+    # We fetch this repo for the BitBake tool itself, not as a Yocto layer.
     layers:
       .: disabled
 
@@ -55,7 +63,9 @@ repos:
     signed: true
     allowed_signers:
       - YoctoBuildandRelease
-    #TODO: Document why this is necessary
+    # 'meta' is the OE-core layer directory within the openembedded-core repository
+    # It contains the core metadata / recipes that BitBake uses.
+    # See https://git.openembedded.org/openembedded-core/tree/meta
     layers:
       meta:
 
@@ -67,10 +77,17 @@ repos:
     allowed_signers:
       - YoctoBuildandRelease
     layers:
-      #TODO: Document why these are needed
+      # Poky is Yocto Project's reference distribution / build environment
+      # meta-poky is the layer that provides Poky's reference distro metadata
+      # See https://docs.yoctoproject.org/ref-manual/terms.html#term-Poky for more information
       meta-poky:
+
+      # Yocto reference hardware Build Support Packages (BSP) [https://docs.yoctoproject.org/bsp-guide/bsp.html]
       meta-yocto-bsp:
 
+  # TODO: meta-raspberrypi is pinned to an immutable commit, but unlike bitbake / oe-core / meta-yocto, this is not signer-verified in kas
+  #       So we have a fixed origin but no signer-verification for source authenticity
+  #       There seems to be no current way to achieve this for this repository.
   meta-openembedded:
     url: "https://git.openembedded.org/meta-openembedded"
     commit: 8bcdb0cc1dab116253b409e78fb868ced7d8397c # Pinned to immutable (whinlatter) [https://git.openembedded.org/meta-openembedded/commit/?h=whinlatter&id=8bcdb0cc1dab116253b409e78fb868ced7d8397c]
@@ -86,7 +103,9 @@ repos:
       # This is included for libcamera recipe
       meta-multimedia:
 
-
+  # TODO: meta-raspberrypi is pinned to an immutable commit, but unlike bitbake / oe-core / meta-yocto, this is not signer-verified in kas
+  #       So we have a fixed origin but no signer-verification for source authenticity
+  #       There seems to be no current way to achieve this for this repository.
   meta-raspberrypi:
     url: "https://git.yoctoproject.org/meta-raspberrypi"
     commit: 469e232c77d74cb030fe8a9af4ffe9127214a29b # Pinned to immutable (tag: whinlatter) (https://git.yoctoproject.org/meta-raspberrypi/commit/?h=whinlatter&id=469e232c77d74cb030fe8a9af4ffe9127214a29b)
