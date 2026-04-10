@@ -24,7 +24,7 @@ file://LICENSE.secluso;md5=6d4ff442c842d1ba9eeb1a2a236c37a4"
 
 # This is our own repository for our fork (set to an immutable commit)
 SRC_URI = "git://github.com/secluso/rpicam-apps-fork.git;branch=main;protocol=https"
-SRCREV = "6665b032bb80c17192a812eaec345de6bf4b7ffb"
+SRCREV = "db484eddae66eec82bfc10b3f1108793724157a6"
 
 # Taken from https://git.yoctoproject.org/meta-raspberrypi/tree/recipes-multimedia/libcamera-apps/rpi-libcamera-apps_git.bb?h=mickledore
 # Note: We set libcamera to 0.4.0 under PREFERRED_VERSION in the kas .yml in local_conf_header
@@ -43,7 +43,7 @@ EXTRA_OECMAKE = "\
 # This is all the files we're keeping from this recipe.
 # Note: rpicam-* are symlinks to libcamera-*
 FILES:${PN} = "\
-  /usr/lib/librpicam_app.so.1.6.0 \
+  /usr/lib/librpicam_app.so.1.9.0 \
   /usr/bin/rpicam-jpeg \
   /usr/bin/rpicam-raw \
   /usr/bin/rpicam-vid \
@@ -89,4 +89,5 @@ do_install:append() {
 
     # We cannot have an un-versioned .so file without having a -dev prefix as it's a development symlink
     rm -v ${D}${libdir}/librpicam_app.so
+    rm -v ${D}${libdir}/librpicam_app.so.1
 }
