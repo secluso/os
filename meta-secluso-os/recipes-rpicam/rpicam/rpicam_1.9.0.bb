@@ -43,7 +43,7 @@ EXTRA_OECMAKE = "\
 # This is all the files we're keeping from this recipe.
 # Note: rpicam-* are symlinks to libcamera-*
 FILES:${PN} = "\
-  /usr/lib/rpicam_app.so.1.6.0 \
+  /usr/lib/librpicam_app.so.1.6.0 \
   /usr/bin/rpicam-jpeg \
   /usr/bin/rpicam-raw \
   /usr/bin/rpicam-vid \
@@ -88,5 +88,5 @@ do_install:append() {
     rm -vrf ${D}${datadir}
 
     # We cannot have an un-versioned .so file without having a -dev prefix as it's a development symlink
-    rm -v ${D}${libdir}/rpicam_app.so
+    rm -v ${D}${libdir}/librpicam_app.so
 }
