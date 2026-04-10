@@ -15,5 +15,5 @@ inherit packagegroup
 #
 # We include our custom rpicam-apps-fork (see recipes-rpicam for more info)
 RDEPENDS:${PN} = " \
-    rpicam \
+    rpicam-apps-fork \
 "
