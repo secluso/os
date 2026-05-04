@@ -18,11 +18,12 @@ LICENSE = "GPL-3.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 # This is our own repository (set to an immutable commit)
-SRC_URI = "git://github.com/secluso/core.git;branch=main;protocol=https"
-SRCREV = "dc2a3d4fbc48b29641402476c17a9824b92bf019"
-
+SRC_URI = "git://github.com/secluso/core.git;branch=remove-openssl-from-camera-hub;protocol=https"
+SRCREV = "91cfa054e343b1119f580a4dede56a612c7fb1f9"
+DEPENDS += " onnxruntime"
 # In meta-rust, it shows we can override CARGO_SRC_DIR to specify our intended source directory within repository [https://github.com/meta-rust/meta-rust/blob/master/classes/cargo.bbclass]
 CARGO_SRC_DIR = "camera_hub"
+CARGO_BUILD_FLAGS += "--features raspberry"
 
 # https://docs.yoctoproject.org/dev/ref-manual/classes.html#cargo-update-recipe-crates
 # Generate new one: `bitbake -c update_crates secluso-camera-hub` from project root
