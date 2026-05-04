@@ -110,6 +110,12 @@ repos:
     url: "https://git.yoctoproject.org/meta-raspberrypi"
     commit: 469e232c77d74cb030fe8a9af4ffe9127214a29b # Pinned to immutable (tag: whinlatter) (https://git.yoctoproject.org/meta-raspberrypi/commit/?h=whinlatter&id=469e232c77d74cb030fe8a9af4ffe9127214a29b)
 
+
+  meta-onnxruntime:
+     url: "https://github.com/NobuoTsukamoto/meta-onnxruntime"
+     commit: bf1f613ca4cc222955a7535daa221446e4b0668e
+
+
 # these are added to the head of the local.conf file
 local_conf_header:
   secluso-os: |
@@ -135,3 +141,6 @@ local_conf_header:
     # Generate a CVE report when we create an image
     INHERIT += "cve-check"
     require conf/distro/include/cve-extra-exclusions.inc
+
+    # Cargo needs this or it fails to fetch dependencies
+    FETCHCMD_wget = "/usr/bin/env wget -t 2 -T 30 --user-agent='bitbake/2.0'"
