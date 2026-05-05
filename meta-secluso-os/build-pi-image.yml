@@ -142,5 +142,29 @@ local_conf_header:
     INHERIT += "cve-check"
     require conf/distro/include/cve-extra-exclusions.inc
 
+    # This should ONLY be used for debugging the image. Otherwise, these should be removed.
+    # Allows debugging via HDMI cable with a custom 'debug' user (root is not allowed). Password is raspberry
+    APPEND += " console=tty1"
+    SYSTEMD_AUTO_ENABLE += "getty@tty1.service"
+    IMAGE_INSTALL:append = " util-linux"
+    USE_VT = "1"
+    RPI_EXTRA_CONFIG += "hdmi_force_hotplug=1\n"
+    INHERIT += "extrausers"
+    EXTRA_USERS_PARAMS = "useradd -p '\$1\$i0XC8F8k\$JXrDlKFbqmIrBp7wFzWJx.' debug;"
+
+    # Camera support (https://github.com/agherzan/meta-raspberrypi/blob/b83766291188efb956c475b09c9666c2dfe2cb69/recipes-bsp/bootfiles/rpi-config_git.bb#L223)
+    RPI_EXTRA_CONFIG += "dtoverlay=ov5647\n"
+    CMDLINE:append = " cma=256M"
+    VIDEO_CAMERA = "1"
+    ENABLE_CAMERA = "0"
+    ENABLE_I2C = "1"
+    # Ensure the ov5647 overlay is built and deployed to /boot/overlays/
+    KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/ov5647.dtbo"
+
+    # Ensure the kernel modules are installed into the image. Needed to properly load in the camera into libcamera
+    # Not all kernel-modules need to be included for proper operation.
+    # TODO: Remove unnecesary kernel modules
+    IMAGE_INSTALL:append = " kmod i2c-tools kernel-modules"
+
     # Cargo needs this or it fails to fetch dependencies
     FETCHCMD_wget = "/usr/bin/env wget -t 2 -T 30 --user-agent='bitbake/2.0'"

@@ -25,6 +25,8 @@ DEPENDS += " onnxruntime"
 CARGO_SRC_DIR = "camera_hub"
 CARGO_BUILD_FLAGS += "--features raspberry"
 
+# The binary gets installed in /usr/bin/secluso-camera-hub per https://github.com/meta-rust/meta-rust/blob/328334d9d31241d1d29eb754c5c102d5b0e002ab/classes/rust-bin.bbclass#L5
+
 # https://docs.yoctoproject.org/dev/ref-manual/classes.html#cargo-update-recipe-crates
 # Generate new one: `bitbake -c update_crates secluso-camera-hub` from project root
 require ${BPN}-crates.inc
