@@ -168,7 +168,7 @@ local_conf_header:
     # TODO: Remove unnecesary kernel modules
     IMAGE_INSTALL:append = " kmod i2c-tools kernel-modules"
 
-    # This is what adds systemd. It contributes 60MB to our image size. It doubles the boot time from 4.76s to 10s on Zero 2W.
+    # This is what adds systemd. It contributes 120 MB to our image size. It doubles the boot time from 4.76s to 10s on Zero 2W.
     # TODO: We don't necessarily need systemd. We can use sysvinit which already comes with it. Something to think about.
     DISTRO_FEATURES:append = " systemd usrmerge"
     DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"

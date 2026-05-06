@@ -9,7 +9,7 @@ do_install:append() {
     install -d ${D}/provision
 
     # Append provision partition entry to /etc/fstab (sysconfdir = /etc)
-    # UUID taken from the custom wks/sdcard-raspberrypi.wks we set earlier
+    # Mount by FAT label taken from the custom wks/sdcard-raspberrypi.wks we set earlier
     # nofail = "do not report errors for this device if it does not exist."
-    echo "UUID=131c42eb-25a8-4179-8498-0d5ddbda2661  /provision  vfat  defaults,nofail  0  0"  >> ${D}${sysconfdir}/fstab
+    echo "LABEL=provision  /provision  vfat  defaults,nofail  0  0"  >> ${D}${sysconfdir}/fstab
 }
