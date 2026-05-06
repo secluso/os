@@ -17,10 +17,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 # This is our own repository (set to an immutable commit)
 SRC_URI = "git://github.com/secluso/core.git;branch=remove-openssl-from-camera-hub;protocol=https"
-SRCREV = "3db06f80d081ef477d3d13b96e6144671f0db6e1"
-DEPENDS += " onnxruntime"
-# Add in nmcli. This adds in 90 MB. I think we can do it without.
-RDEPENDS:${PN} += " networkmanager networkmanager-nmcli"
+SRCREV = "fd15dd260d3e626c082a0dc940a22f00c8f037c8"
+# onnxruntime adds 314 MB to the image size
+# ncmli adds in 90 MB to the image size. TODO: I think we can do it without by using existing packages
+RDEPENDS:${PN} += " networkmanager networkmanager-nmcli onnxruntime"
 # In meta-rust, it shows we can override CARGO_SRC_DIR to specify our intended source directory within repository [https://github.com/meta-rust/meta-rust/blob/master/classes/cargo.bbclass]
 CARGO_SRC_DIR = "camera_hub"
 CARGO_BUILD_FLAGS += "--features raspberry"
