@@ -33,7 +33,8 @@ SRC_URI:append = " file://secluso_camera_hub.service "
 FILES:${PN} += "${systemd_unitdir}/system/secluso_camera_hub.service"
 RDEPENDS:${PN} += "systemd"
 
-do_install() {
+# inherit cargo has its own do_install that installs the secluso_camera_hub binary into /usr/bin. thus, we append
+do_install:append() {
   install -d ${D}/${systemd_unitdir}/system
   install -m 0644 ${UNPACKDIR}/secluso_camera_hub.service ${D}/${systemd_unitdir}/system
 }

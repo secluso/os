@@ -1,6 +1,7 @@
 [Unit]
 Description=secluso_camera_hub
 RequiresMountsFor=/home
+RequiresMountsFor=/provision
 After=network-online.target
 Wants=network-online.target
 
