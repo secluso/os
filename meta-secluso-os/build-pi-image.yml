@@ -119,6 +119,11 @@ repos:
 # these are added to the head of the local.conf file
 local_conf_header:
   secluso-os: |
+    # This is required to download the linux-firmware-rpidistro-bcm43430 for Synaptics WiFi/BT firmware blobs. 
+    # Note that this is actually not in the LICENSE anymore from them. See https://github.com/agherzan/meta-raspberrypi/issues/1453
+    # We will be able to remove this soon, and there is seemingly no longer a killswitch
+    LICENSE_FLAGS_ACCEPTED = "synaptics-killswitch"
+    
     # meta-raspberrypi sets WKS_FILE with a weak assignment (?=), so we don't need a force override
     # wks is a custom configuration script used by the wic tool to define the partitioning layout
     # override theirs with our modified version
@@ -170,6 +175,11 @@ local_conf_header:
     DISTRO_FEATURES:append = " systemd usrmerge"
     DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
     VIRTUAL-RUNTIME_init_manager = "systemd"
+
+    # Referenced from https://hub.mender.io/t/how-to-configure-networking-using-systemd-in-yocto-project/1097
+    # This installs the necessary firmware to connect to WiFi. See LICENSE_FLAGS_ACCEPTED for a relevant discussion.
+    DISTRO_FEATURES:append = " wifi "
+    IMAGE_INSTALL:append = " linux-firmware-rpidistro-bcm43430 "
 
     # Cargo needs this or it fails to fetch dependencies
     FETCHCMD_wget = "/usr/bin/env wget -t 2 -T 30 --user-agent='bitbake/2.0'"
