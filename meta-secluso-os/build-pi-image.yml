@@ -171,10 +171,10 @@ local_conf_header:
     IMAGE_INSTALL:append = " kmod i2c-tools kernel-modules"
 
     # This is what adds systemd. It contributes 120 MB to our image size. It doubles the boot time from 4.76s to 10s on Zero 2W.
-    # TODO: We don't necessarily need systemd. We can use sysvinit which already comes with it. Something to think about.
-    DISTRO_FEATURES:append = " systemd usrmerge"
+    INIT_MANAGER = "systemd"
+    DISTRO_FEATURES:append = " usrmerge"
+    DISTRO_FEATURES:remove = " sysvinit"
     DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
-    VIRTUAL-RUNTIME_init_manager = "systemd"
 
     # Referenced from https://hub.mender.io/t/how-to-configure-networking-using-systemd-in-yocto-project/1097
     # This installs the necessary firmware to connect to WiFi. See LICENSE_FLAGS_ACCEPTED for a relevant discussion.
