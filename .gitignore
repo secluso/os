@@ -1,2 +1,11 @@
 .idea
 .DS_Store
+venv
+meta-raspberrypi
+meta-yocto
+meta-onnxruntime
+meta-openembedded
+openembedded-core
+build
+bitbake
+.kas_gnupg

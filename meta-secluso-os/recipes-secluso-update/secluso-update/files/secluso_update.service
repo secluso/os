@@ -1,0 +1,15 @@
+[Unit]
+Description=Secluso OS Auto Updater
+RequiresMountsFor=/var/lib/secluso
+After=network-online.target secluso_camera_hub.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/secluso-update --component raspberry_camera_hub --interval-secs 1800 --github-timeout-secs 20 --restart-unit secluso_camera_hub.service --github-repo secluso/core --update-hint-path /var/lib/secluso/update_hint --hint-check-interval-secs 60
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
+

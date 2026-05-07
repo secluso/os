@@ -110,9 +110,20 @@ repos:
     url: "https://git.yoctoproject.org/meta-raspberrypi"
     commit: 469e232c77d74cb030fe8a9af4ffe9127214a29b # Pinned to immutable (tag: whinlatter) (https://git.yoctoproject.org/meta-raspberrypi/commit/?h=whinlatter&id=469e232c77d74cb030fe8a9af4ffe9127214a29b)
 
+
+  meta-onnxruntime:
+     url: "https://github.com/NobuoTsukamoto/meta-onnxruntime"
+     commit: bf1f613ca4cc222955a7535daa221446e4b0668e
+
+
 # these are added to the head of the local.conf file
 local_conf_header:
   secluso-os: |
+    # This is required to download the linux-firmware-rpidistro-bcm43430 for Synaptics WiFi/BT firmware blobs. 
+    # Note that this is actually not in the LICENSE anymore from them. See https://github.com/agherzan/meta-raspberrypi/issues/1453
+    # We will be able to remove this soon, and there is seemingly no longer a killswitch
+    LICENSE_FLAGS_ACCEPTED = "synaptics-killswitch"
+    
     # meta-raspberrypi sets WKS_FILE with a weak assignment (?=), so we don't need a force override
     # wks is a custom configuration script used by the wic tool to define the partitioning layout
     # override theirs with our modified version
@@ -135,3 +146,40 @@ local_conf_header:
     # Generate a CVE report when we create an image
     INHERIT += "cve-check"
     require conf/distro/include/cve-extra-exclusions.inc
+
+    # This should ONLY be used for debugging the image. Otherwise, these should be removed.
+    # Allows debugging via HDMI cable with root user with no password. 
+    # TODO: Can we gate this behind a command?
+    APPEND += " console=tty1"
+    IMAGE_INSTALL:append = " util-linux"
+    USE_VT = "1"
+    RPI_EXTRA_CONFIG += "hdmi_force_hotplug=1\n"
+    EXTRA_IMAGE_FEATURES += "empty-root-password"
+
+    # Camera support (https://github.com/agherzan/meta-raspberrypi/blob/b83766291188efb956c475b09c9666c2dfe2cb69/recipes-bsp/bootfiles/rpi-config_git.bb#L223)
+    RPI_EXTRA_CONFIG += "dtoverlay=ov5647\n"
+    VIDEO_CAMERA = "1"
+    # ENABLE_CAMERA is legacy; not libcamera affiliated
+    ENABLE_CAMERA = "0"
+    ENABLE_I2C = "1"
+    # Ensure the ov5647 overlay is built and deployed to /boot/overlays/
+    KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/ov5647.dtbo"
+
+    # Ensure the kernel modules are installed into the image. Needed to properly load in the camera into libcamera
+    # Not all kernel-modules need to be included for proper operation.
+    # TODO: Remove unnecesary kernel modules
+    IMAGE_INSTALL:append = " kmod i2c-tools kernel-modules"
+
+    # This is what adds systemd. It contributes 120 MB to our image size. It doubles the boot time from 4.76s to 10s on Zero 2W.
+    INIT_MANAGER = "systemd"
+    DISTRO_FEATURES:append = " usrmerge"
+    DISTRO_FEATURES:remove = " sysvinit"
+    DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
+
+    # Referenced from https://hub.mender.io/t/how-to-configure-networking-using-systemd-in-yocto-project/1097
+    # This installs the necessary firmware to connect to WiFi. See LICENSE_FLAGS_ACCEPTED for a relevant discussion.
+    DISTRO_FEATURES:append = " wifi "
+    IMAGE_INSTALL:append = " linux-firmware-rpidistro-bcm43430 "
+
+    # Cargo needs this or it fails to fetch dependencies
+    FETCHCMD_wget = "/usr/bin/env wget -t 2 -T 30 --user-agent='bitbake/2.0'"

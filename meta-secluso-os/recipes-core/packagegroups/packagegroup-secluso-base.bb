@@ -16,4 +16,7 @@ inherit packagegroup
 # We include our custom rpicam-apps-fork (see recipes-rpicam for more info)
 RDEPENDS:${PN} = " \
     rpicam-apps-fork \
+    secluso-camera-hub \
+    secluso-update \
+    secluso-management \
 "
