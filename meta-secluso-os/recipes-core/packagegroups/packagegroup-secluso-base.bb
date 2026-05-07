@@ -17,5 +17,6 @@ inherit packagegroup
 RDEPENDS:${PN} = " \
     rpicam-apps-fork \
     secluso-camera-hub \
+    secluso-update \
     secluso-management \
 "
