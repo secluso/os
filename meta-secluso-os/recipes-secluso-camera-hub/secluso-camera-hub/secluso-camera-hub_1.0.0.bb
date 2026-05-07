@@ -17,7 +17,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 # This is our own repository (set to an immutable commit)
 SRC_URI = "git://github.com/secluso/core.git;branch=remove-openssl-from-camera-hub;protocol=https"
-SRCREV = "fd15dd260d3e626c082a0dc940a22f00c8f037c8"
+SRCREV = "fd8443037170a9df102256a2776184e359ef32a3"
 # onnxruntime adds 314 MB to the image size
 # ncmli adds in 90 MB to the image size. TODO: I think we can do it without by using existing packages
 RDEPENDS:${PN} += " networkmanager networkmanager-nmcli onnxruntime"
