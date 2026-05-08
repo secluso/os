@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Secluso, Inc.
+# Additional terms apply; see the NOTICE file in the repository root.
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: jkaczman <jkzgit@pm.me>
+Date: Fri, 8 May 2026 04:33:40 -0400
+Subject: [PATCH] libcamera: make dirty version suffix reproducible
+
+Upstream-Status: Inappropriate [OE-specific reproducible build fix]
+
+When libcamera builds from a patched git checkout, gen-version.sh appends a -dirty suffix with the *CURRENT* UTC timestamp.
+That makes libcamera.so drift due to a different numerical timestamp in each build.
+
+In upstream Raspberry Pi, src/libcamera/meson.build uses vcs_tag() to regenerate version.cpp on each build.
+utils/gen-version.sh is where the dirty-tree timestamp is appended
+---
+ utils/gen-version.sh | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/utils/gen-version.sh b/utils/gen-version.sh
+index 6e83074..20514dc 100755
+--- a/utils/gen-version.sh
++++ b/utils/gen-version.sh
+@@ -42,7 +42,13 @@ if [ -z "$build_dir" ] || (echo "$build_dir" | grep -q "$src_dir")
+ then
+        git update-index --refresh > /dev/null 2>&1
+ fi
+-git diff-index --quiet HEAD || version="$version-dirty ($(date +%Y-%m-%dT%H:%M:%S%Z))"
++
++dirty_suffix='-dirty'
++if [ -n "$SOURCE_DATE_EPOCH" ]; then
++       dirty_timestamp=$(date -u -d "@$SOURCE_DATE_EPOCH" +%Y-%m-%dT%H:%M:%SUTC 2>/dev/null)
++       [ -n "$dirty_timestamp" ] && dirty_suffix="$dirty_suffix ($dirty_timestamp)"
++fi
++git diff-index --quiet HEAD || version="$version$dirty_suffix"
+
+ if [ -n "$project_version" ]
+--
+2.43.0

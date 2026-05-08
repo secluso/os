@@ -1,4 +1,8 @@
-From 2d5356c350553fe5487c7df1f529d56d270fc03c Mon Sep 17 00:00:00 2001
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Secluso, Inc.
+# Additional terms apply; see the NOTICE file in the repository root.
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: jkaczman <jkzgit@pm.me>
 Date: Thu, 9 Apr 2026 17:36:22 +0000
 Subject: [PATCH] src: drop build_rpath
@@ -6,7 +10,7 @@ Subject: [PATCH] src: drop build_rpath
 Remove the Meson build_rpath setting from libpisp so the built shared library does not embed the source tree path in its RPATH.
 This avoids Yocto QA issues caused by build-path references in the output binary.
 
-Upstream-Status: Pending
+Upstream-Status: Inappropriate [OE-specific reproducible build fix]
 
 ---
  src/meson.build | 3 +--
