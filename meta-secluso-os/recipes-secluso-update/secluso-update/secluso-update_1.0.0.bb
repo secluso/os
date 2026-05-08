@@ -2,7 +2,7 @@
 # Copyright (C) 2026 Secluso, Inc.
 # Additional terms apply; see the NOTICE file in the repository root.
 
-# Note: See secluso-camera-hub_1.0.0.bb for references on this file.
+# Note: See secluso-camera-hub_1.0.0.bb for references/notes on this file.
 
 inherit cargo cargo-update-recipe-crates systemd
 
@@ -17,7 +17,14 @@ SRC_URI = " \
 "
 SRCREV = "183642cc858c0e0e1b5a70a13992ae367dc67351"
 
+REPRODUCIBLE_SOURCE_DIR = "/tmp/yocto-reproducible-sources/${BPN}-${PV}-${TARGET_SYS}"
+S = "${REPRODUCIBLE_SOURCE_DIR}"
+
 CARGO_SRC_DIR = "update"
+
+RUSTFLAGS += " --remap-path-prefix=${WORKDIR}=/usr/src/debug/${PN}/${PV}"
+RUSTFLAGS += " --remap-path-prefix=${S}=/usr/src/debug/${PN}/${PV}/sources"
+RUSTFLAGS += " --remap-path-prefix=${CARGO_HOME}=cargo_home"
 
 SYSTEMD_AUTO_ENABLE = "enable"
 SYSTEMD_SERVICE:${PN} = "secluso_update.service"
@@ -31,6 +38,18 @@ RDEPENDS:${PN} += " \
 FILES:${PN} += " \
     ${systemd_unitdir}/system/secluso_update.service \
 "
+
+python do_unpack:append() {
+    import os
+    import shutil
+
+    source_dir = os.path.join(d.getVar("WORKDIR"), "sources", f"{d.getVar('BPN')}-{d.getVar('PV')}")
+    reproducible_source_dir = d.getVar("S")
+
+    bb.utils.remove(reproducible_source_dir, recurse=True)
+    bb.utils.mkdirhier(os.path.dirname(reproducible_source_dir))
+    shutil.copytree(source_dir, reproducible_source_dir, symlinks=True)
+}
 
 do_install:append() {
     install -d ${D}${localstatedir}/lib/secluso
