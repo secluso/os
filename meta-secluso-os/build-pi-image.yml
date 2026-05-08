@@ -25,6 +25,10 @@ machine: raspberrypi0-2w-64
 # The distro name as it is written into the `local.conf` of bitbake.
 distro: poky
 
+env:
+  # Set to 1 when invoking kas to enable HDMI console + empty-root-password debug helpers in local.conf.
+  SECLUSO_DEBUG_IMAGE: "0"
+
 # We want as minimal of an image as possible to build on
 # We use 'secluso-image-minimal' to include our own recipes on top of core-image-minimal
 # Located in recipes-core/images/secluso-pi-image-minimal.bb
@@ -149,12 +153,12 @@ local_conf_header:
 
     # This should ONLY be used for debugging the image. Otherwise, these should be removed.
     # Allows debugging via HDMI cable with root user with no password. 
-    # TODO: Can we gate this behind a command?
-    APPEND += " console=tty1"
-    IMAGE_INSTALL:append = " util-linux"
-    USE_VT = "1"
-    RPI_EXTRA_CONFIG += "hdmi_force_hotplug=1\n"
-    EXTRA_IMAGE_FEATURES += "empty-root-password"
+    # These will only be included if SECLUSO_DEBUG_IMAGE environment varibale is 1
+    APPEND:append = "${@' console=tty1' if d.getVar('SECLUSO_DEBUG_IMAGE') == '1' else ''}"
+    IMAGE_INSTALL:append = "${@' util-linux' if d.getVar('SECLUSO_DEBUG_IMAGE') == '1' else ''}"
+    USE_VT = "${@'1' if d.getVar('SECLUSO_DEBUG_IMAGE') == '1' else '0'}"
+    RPI_EXTRA_CONFIG:append = "${@'hdmi_force_hotplug=1\\n' if d.getVar('SECLUSO_DEBUG_IMAGE') == '1' else ''}"
+    EXTRA_IMAGE_FEATURES:append = "${@' empty-root-password' if d.getVar('SECLUSO_DEBUG_IMAGE') == '1' else ''}"
 
     # Camera support (https://github.com/agherzan/meta-raspberrypi/blob/b83766291188efb956c475b09c9666c2dfe2cb69/recipes-bsp/bootfiles/rpi-config_git.bb#L223)
     RPI_EXTRA_CONFIG += "dtoverlay=ov5647\n"
