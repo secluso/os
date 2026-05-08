@@ -14,9 +14,7 @@ PV = "0.5.2+rpt20250903"
 SRC_URI = " \
     git://github.com/raspberrypi/libcamera.git;protocol=https;branch=main;tag=v${PV} \
     file://0001-libcamera-Do-not-assume-libc-with-clang.patch \
-    # libcamera's meson.build uses utils/gen-version.sh to generate a build-time version string.
-    file://0002-libcamera-Make-dirty-version-suffix-reproducible.patch \
-    # utils/gen-ipa-priv-key.sh generates a fresh RSA key for every build (which is embedded into libcamera.so)
+    file://0002-libcamera-make-dirty-version-suffix-reproducible.patch \
     file://fixed-ipa-priv-key.pem \
 "
 

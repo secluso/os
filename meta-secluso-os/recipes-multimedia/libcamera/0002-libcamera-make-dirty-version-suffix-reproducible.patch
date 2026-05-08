@@ -24,17 +24,18 @@ index 6e83074..20514dc 100755
 +++ b/utils/gen-version.sh
 @@ -42,7 +42,13 @@ if [ -z "$build_dir" ] || (echo "$build_dir" | grep -q "$src_dir")
  then
-        git update-index --refresh > /dev/null 2>&1
+ 	git update-index --refresh > /dev/null 2>&1
  fi
 -git diff-index --quiet HEAD || version="$version-dirty ($(date +%Y-%m-%dT%H:%M:%S%Z))"
 +
 +dirty_suffix='-dirty'
 +if [ -n "$SOURCE_DATE_EPOCH" ]; then
-+       dirty_timestamp=$(date -u -d "@$SOURCE_DATE_EPOCH" +%Y-%m-%dT%H:%M:%SUTC 2>/dev/null)
-+       [ -n "$dirty_timestamp" ] && dirty_suffix="$dirty_suffix ($dirty_timestamp)"
++	dirty_timestamp=$(date -u -d "@$SOURCE_DATE_EPOCH" +%Y-%m-%dT%H:%M:%SUTC 2>/dev/null)
++	[ -n "$dirty_timestamp" ] && dirty_suffix="$dirty_suffix ($dirty_timestamp)"
 +fi
 +git diff-index --quiet HEAD || version="$version$dirty_suffix"
-
+ 
+ # If a project version is provided, use it to replace the version number.
  if [ -n "$project_version" ]
---
+-- 
 2.43.0
