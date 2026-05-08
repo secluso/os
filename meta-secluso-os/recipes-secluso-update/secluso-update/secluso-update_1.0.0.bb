@@ -15,7 +15,7 @@ SRC_URI = " \
     git://github.com/secluso/core.git;branch=remove-openssl-from-camera-hub;protocol=https \
     file://secluso_update.service \
 "
-SRCREV = "183642cc858c0e0e1b5a70a13992ae367dc67351"
+SRCREV = "773c4f4c5f90febd5ef4ef1ffe3d586da0f0d5e8"
 
 REPRODUCIBLE_SOURCE_DIR = "/tmp/yocto-reproducible-sources/${BPN}-${PV}-${TARGET_SYS}"
 S = "${REPRODUCIBLE_SOURCE_DIR}"
