@@ -12,7 +12,7 @@ LICENSE = "GPL-3.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 SRC_URI = " \
-    git://github.com/secluso/core.git;branch=remove-openssl-from-camera-hub;protocol=https \
+    git://github.com/secluso/core.git;branch=main;protocol=https \
     file://secluso_update.service \
 "
 SRCREV = "773c4f4c5f90febd5ef4ef1ffe3d586da0f0d5e8"

@@ -16,7 +16,7 @@ LICENSE = "GPL-3.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 # This is our own repository (set to an immutable commit)
-SRC_URI = "git://github.com/secluso/core.git;branch=remove-openssl-from-camera-hub;protocol=https"
+SRC_URI = "git://github.com/secluso/core.git;branch=main;protocol=https"
 SRCREV = "773c4f4c5f90febd5ef4ef1ffe3d586da0f0d5e8"
 
 # Cargo fingerprints local path crates using their absolute source path
