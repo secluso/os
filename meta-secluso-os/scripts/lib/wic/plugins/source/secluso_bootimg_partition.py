@@ -17,8 +17,10 @@
 # TODO: Before updating Yocto version in the future, check for modifications.
 #
 # Upstream source:
+#   openembedded-core commit: ab57471acad7ce2a037480dc7b301104620f1ebf
 #   scripts/lib/wic/plugins/source/bootimg_partition.py
 #   upstream sha256: c1df6d0d1f6e456254a9abad4e07a400dedc476a4ff54522bc36ca2bab741ee7
+# END MODIFIED AREA 1.
 
 import logging
 import os
@@ -174,5 +176,64 @@ class BootimgPartitionPlugin(SourcePlugin):
             exec_cmd(install_cmd)
 
         logger.debug('Prepare boot partition using rootfs in %s', hdddir)
-        part.prepare_rootfs(cr_workdir, oe_builddir, hdddir,
-                            native_sysroot, False)
+        # MODIFIED AREA 4: DETERMINISTIC FAT IMAGE POPULATION.
+        # OE-Core calls part.prepare_rootfs whose vfat path eventually runs "mcopy -s <staging-dir>/* ::/"
+        # That recursive copy lets mtools observe host filesystem directory order, which made OVERLAYS/*.dtbo  cluster placement differ across build hosts
+        # Create the FAT image here and copy staged files one-by-one in sorted (destination) order
+        from wic.misc import exec_native_cmd
+
+        rootfs = "%s/rootfs_%s.%s.%s" % (cr_workdir, part.label,
+                                         part.lineno, part.fstype)
+        if os.path.isfile(rootfs):
+            os.remove(rootfs)
+
+        du_cmd = "du -bks %s" % hdddir
+        out = exec_cmd(du_cmd)
+        blocks = int(out.split()[0])
+        rootfs_size = part.get_rootfs_size(blocks)
+
+        label_str = "-n boot"
+        if part.label:
+            label_str = "-n %s" % part.label
+
+        extraopts = part.mkfs_extraopts or '-S 512'
+        dosfs_cmd = "mkdosfs %s -i %s %s -C %s %d" % \
+                    (label_str, part.fsuuid, extraopts, rootfs,
+                     rootfs_size)
+        exec_native_cmd(dosfs_cmd, native_sysroot)
+
+        copy_tasks = []
+        for dirpath, dirs, files in os.walk(hdddir):
+            dirs.sort()
+            files.sort()
+            for filename in files:
+                src_path = os.path.join(dirpath, filename)
+                dst_path = os.path.relpath(src_path, hdddir)
+                copy_tasks.append((dst_path, src_path))
+
+        created_dirs = set()
+        for dst_path, src_path in sorted(copy_tasks):
+            dst_dir = os.path.dirname(dst_path)
+            if dst_dir:
+                current_dir = ""
+                for component in dst_dir.split(os.sep):
+                    if not component:
+                        continue
+                    current_dir = component if not current_dir else \
+                                  os.path.join(current_dir, component)
+                    if current_dir not in created_dirs:
+                        mmd_cmd = "mmd -i %s ::/%s" % (rootfs, current_dir)
+                        exec_native_cmd(mmd_cmd, native_sysroot)
+                        created_dirs.add(current_dir)
+
+            mcopy_cmd = "mcopy -i %s %s ::/%s" % (rootfs, src_path, dst_path)
+            exec_native_cmd(mcopy_cmd, native_sysroot)
+
+        chmod_cmd = "chmod 644 %s" % rootfs
+        exec_cmd(chmod_cmd)
+        part.source_file = rootfs
+
+        du_cmd = "du --apparent-size -Lks %s" % rootfs
+        out = exec_cmd(du_cmd)
+        part.size = int(out.split()[0])
+        # END MODIFIED AREA 4.
