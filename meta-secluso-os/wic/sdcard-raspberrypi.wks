@@ -22,7 +22,8 @@
 # mmcblk0 is the primary block device name in Linux for the internal eMMC/iNAND flash storage
 # The Secluso bootimg source copies OE-Core bootimg_partition and modifies it for reproducibility in the boot partition across different hosts
 part /boot --source secluso_bootimg_partition --uuid 19c8b09a-9511-47c5-bcfd-c7ed89dce60e --fsuuid 0xABCD1234 --ondisk mmcblk0 --fstype=vfat --label boot --active --align 4096 --size 100 --mkfs-extraopts '-S 512 --invariant'
-part / --source rootfs --uuid a3bbee25-b921-4c33-ad76-64b56abb3900 --fsuuid 59aa4d0b-2b86-4550-b711-8ee512955940 --ondisk mmcblk0 --fstype=ext4 --label root --align 4096
+# The Secluso rootfs  source modifies OE-Core rootfs and modifies it for reproducibility in the rootfs partition across different hosts
+part / --source secluso_rootfs --uuid a3bbee25-b921-4c33-ad76-64b56abb3900 --fsuuid 59aa4d0b-2b86-4550-b711-8ee512955940 --ondisk mmcblk0 --fstype=ext4 --label root --align 4096
 
 # Notice that no --source is provided below. That means that its defaulted to 'empty', which fills it with zeros. This works for our purposes of having the deploy tool fill it later.
 # Right now, all we have to put in here is 'wifi_password' and 'camera_secret'. 16M gives us some extra room for more later if need be.
