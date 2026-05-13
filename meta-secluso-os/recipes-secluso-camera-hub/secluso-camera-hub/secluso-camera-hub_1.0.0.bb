@@ -16,8 +16,8 @@ LICENSE = "GPL-3.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 # This is our own repository (set to an immutable commit)
-SRC_URI = "git://github.com/secluso/core.git;branch=main;protocol=https"
-SRCREV = "230d2b2568fdfd503e21d15cccfa89729456450f"
+SRC_URI = "git://github.com/secluso/core.git;branch=fix/stabilize-repro;protocol=https"
+SRCREV = "61918a42bd960c0ab91b5fabd77ea778e4e330fd"
 
 # Cargo fingerprints local path crates using their absolute source path
 # Thus, we copy the workspace to a canonical location before compiling.
@@ -62,7 +62,6 @@ python do_unpack:append() {
 
 # inherit cargo has its own do_install that installs the secluso_camera_hub binary into /usr/bin. thus, we append
 do_install:append() {
-    mkdir -p ${D}${localstatedir}/lib/secluso
     install -d ${D}/${systemd_unitdir}/system
     install -m 0644 ${UNPACKDIR}/secluso_camera_hub.service ${D}/${systemd_unitdir}/system
 }

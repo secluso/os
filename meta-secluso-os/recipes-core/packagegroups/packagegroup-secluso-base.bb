@@ -19,4 +19,5 @@ RDEPENDS:${PN} = " \
     secluso-camera-hub \
     secluso-update \
     secluso-management \
+    grow-data-partition \
 "

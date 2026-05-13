@@ -12,10 +12,10 @@ LICENSE = "GPL-3.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 SRC_URI = " \
-    git://github.com/secluso/core.git;branch=main;protocol=https \
+    git://github.com/secluso/core.git;branch=fix/stabilize-repro;protocol=https \
     file://secluso_update.service \
 "
-SRCREV = "230d2b2568fdfd503e21d15cccfa89729456450f"
+SRCREV = "61918a42bd960c0ab91b5fabd77ea778e4e330fd"
 
 REPRODUCIBLE_SOURCE_DIR = "/tmp/yocto-reproducible-sources/${BPN}-${PV}-${TARGET_SYS}"
 S = "${REPRODUCIBLE_SOURCE_DIR}"
@@ -52,7 +52,6 @@ python do_unpack:append() {
 }
 
 do_install:append() {
-    install -d ${D}${localstatedir}/lib/secluso
     install -d ${D}${systemd_unitdir}/system
     install -m 0644 ${UNPACKDIR}/secluso_update.service ${D}${systemd_unitdir}/system
 }

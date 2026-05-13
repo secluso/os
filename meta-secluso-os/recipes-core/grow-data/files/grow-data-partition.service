@@ -1,0 +1,14 @@
+[Unit]
+Description=Grow /data partition to fill SD card on first boot
+DefaultDependencies=no
+Before=local-fs.target
+After=local-fs-pre.target
+ConditionPathExists=!/var/lib/grow-data-done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/grow-data-partition.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=local-fs.target

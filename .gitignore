@@ -9,3 +9,4 @@ openembedded-core
 build
 bitbake
 .kas_gnupg
+__pycache__
