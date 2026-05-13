@@ -161,13 +161,16 @@ local_conf_header:
     EXTRA_IMAGE_FEATURES:append = "${@' empty-root-password' if d.getVar('SECLUSO_DEBUG_IMAGE') == '1' else ''}"
 
     # Camera support (https://github.com/agherzan/meta-raspberrypi/blob/b83766291188efb956c475b09c9666c2dfe2cb69/recipes-bsp/bootfiles/rpi-config_git.bb#L223)
-    RPI_EXTRA_CONFIG += "dtoverlay=ov5647\n"
+    # Support the sensors for Camera Module V1 and V2.
+    # "camera_auto_detect" allows for either overlay (instead of forcing one) to be supported
+    RPI_EXTRA_CONFIG += "\ncamera_auto_detect=1\n"
     VIDEO_CAMERA = "1"
     # ENABLE_CAMERA is legacy; not libcamera affiliated
     ENABLE_CAMERA = "0"
     ENABLE_I2C = "1"
-    # Ensure the ov5647 overlay is built and deployed to /boot/overlays/
+    # Ensure the ov5647 & imx219 overlays are built and deployed to /boot/overlays/
     KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/ov5647.dtbo"
+    KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/imx219.dtbo"
 
     # Ensure the kernel modules are installed into the image. Needed to properly load in the camera into libcamera
     # Not all kernel-modules need to be included for proper operation.
