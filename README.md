@@ -1,6 +1,11 @@
 # Secluso OS
 
-An extremely secure and verifiable OS for our core software. Please see below on how to check reproducible builds.
+A verifiable OS to accompany our core software. 
+
+There is substantial work left to complete the long-term goals of this repository. Notably, some things to-do are making rootfs read-only, regular OS updates to patch CVEs via A/B, hardening the kernel, continue stripping out un-used parts of the OS, etc. Currently, it is considered to be slightly better in security than Raspberry Pi's distributed headless image, with the addition of our software stack and full byte-for-byte reproducibility of the entire image.
+
+
+Please see below on how to check reproducible builds.
 
 To build, run this command on x86-64 Linux from the meta-secluso-os directory:
 ```chatinput
