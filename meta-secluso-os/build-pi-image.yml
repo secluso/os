@@ -23,7 +23,8 @@ signers:
 # The machine as it is written into the `local.conf` of bitbake.
 machine: raspberrypi0-2w-64
 # The distro name as it is written into the `local.conf` of bitbake.
-distro: poky
+# Selects conf/distro/secluso.conf from meta-secluso-os.
+distro: secluso
 
 env:
   # Set to 1 when invoking kas to enable HDMI console + empty-root-password debug helpers in local.conf.
@@ -46,6 +47,12 @@ repos:
   # The monolithic poky source arrangement approach is no longer recommended.
   # Thus, the recommended approach is to use indiviudal clones of bitbake, oe-core and meta-yocto (a split approach).
   # Thus, we mirror this [https://docs.yoctoproject.org/dev/dev-manual/poky-manual-setup.html] in the kas configuration
+  #
+  # We previously also pulled meta-yocto (for meta-poky and meta-yocto-bsp).
+  # meta-poky provided the "poky" reference distro, which we have replaced with our own conf/distro/secluso.conf.
+  # meta-yocto-bsp provides reference BSPs (qemu*, genericx86, beaglebone-yocto) that we do not target
+  # Our Pi BSP comes entirely from meta-raspberrypi.
+  # So meta-yocto is no longer needed.
   bitbake:
     url: "https://git.openembedded.org/bitbake"
     commit: d6e45bad8e7b5bbae23307243a5e7ade147ba668 # Pinned to immutable (whinlatter) [https://git.openembedded.org/bitbake/tag/?h=yocto-5.3.3]
@@ -73,23 +80,7 @@ repos:
     layers:
       meta:
 
-  meta-yocto:
-    url: "https://git.yoctoproject.org/meta-yocto"
-    commit: 9b98ec5e6cfb6c9dc74d3c2e6304eeb274f7c487 # Pinned to immutable (whinlatter) [https://git.yoctoproject.org/meta-yocto/commit/?h=whinlatter&id=9b98ec5e6cfb6c9dc74d3c2e6304eeb274f7c487]
-    tag: yocto-5.3.3  # We additionally specify the tag to allow the signature to be verified
-    signed: true
-    allowed_signers:
-      - YoctoBuildandRelease
-    layers:
-      # Poky is Yocto Project's reference distribution / build environment
-      # meta-poky is the layer that provides Poky's reference distro metadata
-      # See https://docs.yoctoproject.org/ref-manual/terms.html#term-Poky for more information
-      meta-poky:
-
-      # Yocto reference hardware Build Support Packages (BSP) [https://docs.yoctoproject.org/bsp-guide/bsp.html]
-      meta-yocto-bsp:
-
-  # TODO: meta-raspberrypi is pinned to an immutable commit, but unlike bitbake / oe-core / meta-yocto, this is not signer-verified in kas
+  # TODO: meta-openembedded is pinned to an immutable commit, but unlike bitbake / oe-core, this is not signer-verified in kas
   #       So we have a fixed origin but no signer-verification for source authenticity
   #       There seems to be no current way to achieve this for this repository.
   meta-openembedded:
@@ -107,7 +98,7 @@ repos:
       # This is included for libcamera recipe
       meta-multimedia:
 
-  # TODO: meta-raspberrypi is pinned to an immutable commit, but unlike bitbake / oe-core / meta-yocto, this is not signer-verified in kas
+  # TODO: meta-raspberrypi is pinned to an immutable commit, but unlike bitbake / oe-core, this is not signer-verified in kas
   #       So we have a fixed origin but no signer-verification for source authenticity
   #       There seems to be no current way to achieve this for this repository.
   meta-raspberrypi:
@@ -148,6 +139,8 @@ local_conf_header:
     PREFERRED_VERSION_libcamera = "1:0.5.2+rpt20250903"
     
     # Generate a CVE report when we create an image
+    # TODO: Exclude kernel false positives: https://docs.yoctoproject.org/security-manual/vulnerabilities.html#linux-kernel-vulnerabilities
+    # TODO: See discussion in https://github.com/secluso/os/issues/16
     INHERIT += "cve-check"
     require conf/distro/include/cve-extra-exclusions.inc
 
@@ -177,15 +170,8 @@ local_conf_header:
     # TODO: Remove unnecesary kernel modules
     IMAGE_INSTALL:append = " kmod i2c-tools kernel-modules"
 
-    # This is what adds systemd. It contributes 120 MB to our image size. It doubles the boot time from 4.76s to 10s on Zero 2W.
-    INIT_MANAGER = "systemd"
-    DISTRO_FEATURES:append = " usrmerge"
-    DISTRO_FEATURES:remove = " sysvinit"
-    DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
-
     # Referenced from https://hub.mender.io/t/how-to-configure-networking-using-systemd-in-yocto-project/1097
     # This installs the necessary firmware to connect to WiFi. See LICENSE_FLAGS_ACCEPTED for a relevant discussion.
-    DISTRO_FEATURES:append = " wifi "
     IMAGE_INSTALL:append = " linux-firmware-rpidistro-bcm43430 "
 
     # Cargo needs this or it fails to fetch dependencies
