@@ -31,5 +31,8 @@ part /provision --size 16M --uuid 131c42eb-25a8-4179-8498-0d5ddbda2661 --fsuuid=
 
 # This is where we store Secluso data such as pending videos, thumbnails, keys, etc.
 # It is automatically expanded on first boot to capture the rest of free data in the SD card.
-# The 1M is a placeholder.
-part /data --size 1M --uuid 550dfb85-b06d-4a12-9689-edca28a10550 --fsuuid 82b80609-dcc3-497d-951e-df1699444bd1 --ondisk mmcblk0 --fstype=ext4 --label data --align 4096 
+#
+# mke2fs tunes its defaults (inode count, inode size, enabled features, block-group layout) to the filesystem size given at create time.
+# 1M is too little; ends up with a degenerate layout, thus 16M was chosen
+# The size-dependent default selection comes from /etc/mke2fs.conf — see mke2fs(8): https://man7.org/linux/man-pages/man8/mke2fs.8.html
+part /data --size 16M --uuid 550dfb85-b06d-4a12-9689-edca28a10550 --fsuuid 82b80609-dcc3-497d-951e-df1699444bd1 --ondisk mmcblk0 --fstype=ext4 --label data --align 4096
