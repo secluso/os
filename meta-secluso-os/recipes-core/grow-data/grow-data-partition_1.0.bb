@@ -21,7 +21,7 @@ inherit systemd
 SYSTEMD_SERVICE:${PN} = "grow-data-partition.service"
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
-RDEPENDS:${PN} = "parted e2fsprogs-resize2fs"
+RDEPENDS:${PN} = "parted e2fsprogs-resize2fs e2fsprogs-e2fsck"
 
 do_install() {
     install -d ${D}${sbindir}

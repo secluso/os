@@ -2,6 +2,8 @@
 Description=Grow /data partition to fill SD card on first boot
 DefaultDependencies=no
 Before=local-fs.target
+Before=systemd-fsck@dev-mmcblk0p4.service
+Before=data.mount
 After=local-fs-pre.target
 ConditionPathExists=!/var/lib/grow-data-done
 

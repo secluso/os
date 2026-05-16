@@ -23,9 +23,13 @@ partprobe ${DISK} 2>/dev/null || true
 # Resize partition 4 to use all remaining space
 parted -s ${DISK} resizepart ${PART_NUM} 100%
 
-# Inform kernel of the change
+# Inform kernel of the change and wait for udev to finish recreating the device node before touching it (a fixed sleep races with node recreation)
 partprobe ${DISK}
-sleep 1
+udevadm settle
+
+# resize2fs needs a clean filesystem; e2fsck exit codes 0 and 1 are both OK (1 = errors found and corrected)
+# also matches the fsck-every-boot intent for /data and avoids racing systemd-fsck@dev-mmcblk0p4.service.
+e2fsck -fp ${PART_DEV} || [ $? -le 1 ]
 
 # Grow the ext4 filesystem to fill the new partition size
 resize2fs ${PART_DEV}
