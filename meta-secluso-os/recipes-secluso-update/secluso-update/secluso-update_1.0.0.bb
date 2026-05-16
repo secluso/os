@@ -12,10 +12,10 @@ LICENSE = "GPL-3.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 SRC_URI = " \
-    git://github.com/secluso/core.git;branch=fix/stabilize-repro;protocol=https \
+    git://github.com/secluso/core.git;branch=main;protocol=https \
     file://secluso_update.service \
 "
-SRCREV = "61918a42bd960c0ab91b5fabd77ea778e4e330fd"
+SRCREV = "ac84c8f9f348b675a5d2218f3cff5f7d7ebdea72"
 
 REPRODUCIBLE_SOURCE_DIR = "/tmp/yocto-reproducible-sources/${BPN}-${PV}-${TARGET_SYS}"
 S = "${REPRODUCIBLE_SOURCE_DIR}"
