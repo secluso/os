@@ -1,5 +1,5 @@
 [Unit]
-Description=Secluso OS Auto Updater
+Description=Secluso Camera Hub Auto Updater
 RequiresMountsFor=/data
 After=network-online.target secluso_camera_hub.service
 Wants=network-online.target
