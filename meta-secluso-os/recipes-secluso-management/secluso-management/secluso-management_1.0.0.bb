@@ -5,7 +5,7 @@
 SUMMARY = "Version number of Secluso OS"
 LICENSE = "GPL-3.0-or-later"
 
-PV = "1.0.0"
+PV = "1.0.1"
 
 do_install() {
     mkdir -p ${D}${sysconfdir}
