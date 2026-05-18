@@ -2,8 +2,6 @@
 # Copyright (C) 2026 Secluso, Inc.
 # Additional terms apply; see the NOTICE file in the repository root.
 
-#TODO: Verify reproducible
-
 # Referenced https://docs.yoctoproject.org/dev-manual/new-recipe.html
 # Referenced https://github.com/facebook/openbmc/blob/5bf12b96fd7797c84798049bc404581be8390bc7/meta-facebook/meta-catalina/recipes-catalina/satellite-relay/satellite-relay_0.1.0.bb
 
@@ -17,7 +15,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 # This is our own repository (set to an immutable commit)
 SRC_URI = "git://github.com/secluso/core.git;branch=main;protocol=https"
-SRCREV = "ac84c8f9f348b675a5d2218f3cff5f7d7ebdea72"
+SRCREV = "e6eed06fe2411377863a2da0bc9fdf60dac4cadb"
 
 # Cargo fingerprints local path crates using their absolute source path
 # Thus, we copy the workspace to a canonical location before compiling.

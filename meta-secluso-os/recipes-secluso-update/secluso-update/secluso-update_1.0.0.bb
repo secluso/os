@@ -15,7 +15,7 @@ SRC_URI = " \
     git://github.com/secluso/core.git;branch=main;protocol=https \
     file://secluso_update.service \
 "
-SRCREV = "ac84c8f9f348b675a5d2218f3cff5f7d7ebdea72"
+SRCREV = "e6eed06fe2411377863a2da0bc9fdf60dac4cadb"
 
 REPRODUCIBLE_SOURCE_DIR = "/tmp/yocto-reproducible-sources/${BPN}-${PV}-${TARGET_SYS}"
 S = "${REPRODUCIBLE_SOURCE_DIR}"
