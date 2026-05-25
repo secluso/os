@@ -21,7 +21,7 @@ signers:
     gpg_keyserver: keyserver.ubuntu.com
 
 # The machine as it is written into the `local.conf` of bitbake.
-machine: raspberrypi0-2w-64
+machine: raspberrypi4-64
 # The distro name as it is written into the `local.conf` of bitbake.
 # Selects conf/distro/secluso.conf from meta-secluso-os.
 distro: secluso
@@ -118,7 +118,7 @@ local_conf_header:
     # meta-raspberrypi sets WKS_FILE with a weak assignment (?=), so we don't need a force override
     # wks is a custom configuration script used by the wic tool to define the partitioning layout
     # override theirs with our modified version
-    WKS_FILE:raspberrypi0-2w-64 = "sdcard-raspberrypi.wks"
+    WKS_FILE = "sdcard-raspberrypi.wks"
     
     # Reference: https://wiki.yoctoproject.org/wiki/Reproducible_Builds
     # These should be default values. We re-affirm them here to be safe.
@@ -159,8 +159,8 @@ local_conf_header:
     ENABLE_CAMERA = "0"
     ENABLE_I2C = "1"
     # Ensure the ov5647 & imx219 overlays are built and deployed to /boot/overlays/
-    KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/ov5647.dtbo"
-    KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/imx219.dtbo"
+    KERNEL_DEVICETREE:append = " overlays/ov5647.dtbo"
+    KERNEL_DEVICETREE:append = " overlays/imx219.dtbo"
 
     # Ensure the kernel modules are installed into the image. Needed to properly load in the camera into libcamera
     # Not all kernel-modules need to be included for proper operation.
