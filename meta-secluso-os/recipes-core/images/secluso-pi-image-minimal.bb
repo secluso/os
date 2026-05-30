@@ -13,6 +13,15 @@ require recipes-core/images/core-image-minimal.bb
 # See https://docs.yoctoproject.org/ref-manual/variables.html#term-IMAGE_INSTALL for ref
 IMAGE_INSTALL:append = " packagegroup-secluso-base"
 
+# Use overlayfs /etc to ensure that those persist.
+IMAGE_FEATURES:append = " overlayfs-etc read-only-rootfs"
+
+# Emit a .squashfs file for A/B updates.
+IMAGE_FSTYPES:append = " squashfs"
+
+# Grow /data before overlayfs-etc uses it as the backing store for /etc.
+OVERLAYFS_ETC_INIT_TEMPLATE = "${THISDIR}/files/overlayfs-etc-preinit-grow.sh.in"
+
 # NetworkManager manages dnsmasq as a child process. 
 # Remove the systemd wants symlink so dnsmasq does not start as a standalone service.
 # Must run after systemd_handle_machine_id which recreates the symlink.

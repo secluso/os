@@ -120,6 +120,14 @@ local_conf_header:
     # override theirs with our modified version
     WKS_FILE:raspberrypi0-2w-64 = "sdcard-raspberrypi.wks"
     
+    # Ensure that /etc gets overlayed onto /data (this won't conflict with the camera_hub as they use directories)
+    OVERLAYFS_ETC_MOUNT_POINT = "/data"
+    OVERLAYFS_ETC_DEVICE = "/dev/mmcblk0p4"
+    OVERLAYFS_ETC_FSTYPE = "ext4"
+
+    # Ensure the bootloader knows it's squashfs not ext4 for the root partition
+    CMDLINE_ROOT_FSTYPE = "rootfstype=squashfs"
+    
     # Reference: https://wiki.yoctoproject.org/wiki/Reproducible_Builds
     # These should be default values. We re-affirm them here to be safe.
     BUILD_REPRODUCIBLE_BINARIES = "1"

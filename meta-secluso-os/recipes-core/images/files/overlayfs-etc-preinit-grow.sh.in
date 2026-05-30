@@ -1,0 +1,119 @@
+#!/bin/sh
+
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Secluso, Inc.
+# Additional terms apply; see the NOTICE file in the repository root.
+
+# Used to ensure that the initial pre-init grow to the size of the SD card (for the /data partition) happens before overlayfs tries to work to use it as its backing store.
+
+echo "PREINIT: Start"
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+if {CREATE_MOUNT_DIRS}; then
+    mount -o remount,rw /
+
+    mkdir -p /proc
+    mkdir -p /sys
+    mkdir -p /run
+    mkdir -p /var/run
+    mkdir -p {OVERLAYFS_ETC_MOUNT_POINT}
+fi
+
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+
+[ -z "$CONSOLE" ] && CONSOLE="/dev/console"
+
+BASE_OVERLAY_ETC_DIR={OVERLAYFS_ETC_MOUNT_POINT}/overlay-etc
+UPPER_DIR=$BASE_OVERLAY_ETC_DIR/upper
+WORK_DIR=$BASE_OVERLAY_ETC_DIR/work
+LOWER_DIR=$BASE_OVERLAY_ETC_DIR/lower
+GROW_MARKER={OVERLAYFS_ETC_MOUNT_POINT}/.grow-data-done
+PART_DEV={OVERLAYFS_ETC_DEVICE}
+
+case "$PART_DEV" in
+    *p[0-9]*)
+        DISK=${{PART_DEV%p*}}
+        PART_NUM=${{PART_DEV##*p}}
+        ;;
+    *[0-9])
+        DISK=${{PART_DEV%[0-9]*}}
+        PART_NUM=${{PART_DEV##*[!0-9]}}
+        ;;
+    *)
+        DISK=""
+        PART_NUM=""
+        ;;
+esac
+
+mount_data_partition() {{
+    mount -n -t {OVERLAYFS_ETC_FSTYPE} \
+        -o {OVERLAYFS_ETC_MOUNT_OPTIONS} \
+        {OVERLAYFS_ETC_DEVICE} {OVERLAYFS_ETC_MOUNT_POINT}
+}}
+
+if mount_data_partition
+then
+    DATA_READY=1
+    if [ ! -e "$GROW_MARKER" ]; then
+        GROW_OK=0
+
+        echo "PREINIT: Growing {OVERLAYFS_ETC_DEVICE} before mounting overlay upperdir"
+
+        umount {OVERLAYFS_ETC_MOUNT_POINT}
+
+        if [ -n "$DISK" ] && [ -n "$PART_NUM" ]; then
+            partprobe "$DISK" 2>/dev/null || true
+        fi
+
+        if [ -n "$DISK" ] && [ -n "$PART_NUM" ] && \
+            parted -s "$DISK" resizepart "$PART_NUM" 100% && \
+            partprobe "$DISK" && \
+            udevadm settle && \
+            (e2fsck -fp "$PART_DEV" || [ $? -le 1 ]) && \
+            resize2fs "$PART_DEV"
+        then
+            GROW_OK=1
+            echo "PREINIT: Resized $PART_DEV successfully"
+        else
+            echo "PREINIT: Failed to grow $PART_DEV"
+        fi
+
+        if mount_data_partition; then
+            if [ "$GROW_OK" = 1 ] && [ ! -e "$GROW_MARKER" ]; then
+                touch "$GROW_MARKER"
+            fi
+        else
+            DATA_READY=0
+            echo "PREINIT: Remounting <{OVERLAYFS_ETC_MOUNT_POINT}> failed!"
+        fi
+    fi
+
+    if [ "$DATA_READY" = 1 ]; then
+        mkdir -p $UPPER_DIR
+        mkdir -p $WORK_DIR
+
+        if {OVERLAYFS_ETC_EXPOSE_LOWER}; then
+            mkdir -p $LOWER_DIR
+
+            # Provide read-only access to original /etc content...
+            mount -o bind,ro /etc $LOWER_DIR
+        fi
+
+        mount -n -t overlay \
+            -o upperdir=$UPPER_DIR \
+            -o lowerdir=/etc \
+            -o workdir=$WORK_DIR \
+            -o index=off,xino=off,redirect_dir=off,metacopy=off \
+            $UPPER_DIR /etc || \
+                echo "PREINIT: Mounting etc-overlay failed!"
+    fi
+else
+    echo "PREINIT: Mounting <{OVERLAYFS_ETC_MOUNT_POINT}> failed!"
+fi
+
+umount /sys
+umount /proc
+
+echo "PREINIT: done; starting </sbin/init>"
+exec {SBIN_INIT_NAME}

@@ -19,5 +19,7 @@ RDEPENDS:${PN} = " \
     secluso-camera-hub \
     secluso-update \
     secluso-management \
-    grow-data-partition \
+    parted \
+    e2fsprogs-resize2fs \
+    e2fsprogs-e2fsck \
 "
