@@ -2,7 +2,12 @@
 
 A verifiable OS to accompany our core software. 
 
-There is substantial work left to complete the long-term goals of this repository. Notably, some things to-do are making rootfs read-only, regular OS updates to patch CVEs via A/B, hardening the kernel, continue stripping out un-used parts of the OS, etc. Currently, it is considered to be slightly better in security than Raspberry Pi's distributed headless image, with the addition of our software stack and full byte-for-byte reproducibility of the entire image.
+The benefits of this OS over Raspberry Pi OS Lite are:
+- We use a (read-only, compressed) squashfs filesystem for the rootfs. This is not in the latest release, but it will be out soon. 
+- We have reproducible builds that have our camera firmware baked in.
+- We have stripped out some dependencies such as the package manager that don't need to be included in a project such as this.
+
+There is substantial work left to complete the long-term goals of this repository. Notably, some things to-do are regular OS updates to patch CVEs via A/B, hardening the kernel, continue stripping out un-used parts of the OS, etc. 
 
 
 Please see below on how to check reproducible builds.
