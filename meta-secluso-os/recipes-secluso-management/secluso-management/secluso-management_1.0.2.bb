@@ -2,6 +2,8 @@
 # Copyright (C) 2026 Secluso, Inc.
 # Additional terms apply; see the NOTICE file in the repository root.
 
+# TODO: Deprecate this and use the distro version that now exists.
+
 SUMMARY = "Version number of Secluso OS"
 LICENSE = "GPL-3.0-or-later"
 
