@@ -27,7 +27,7 @@ RDEPENDS:${PN} += " "
 # In meta-rust, it shows we can override CARGO_SRC_DIR to specify our intended source directory within repository [https://github.com/meta-rust/meta-rust/blob/master/classes/cargo.bbclass]
 CARGO_SRC_DIR = "toggle"
 
-# The binary gets installed in /usr/bin/secluso-camera-hub per https://github.com/meta-rust/meta-rust/blob/328334d9d31241d1d29eb754c5c102d5b0e002ab/classes/rust-bin.bbclass#L5
+# The binary gets installed in /usr/bin/secluso-toggle per https://github.com/meta-rust/meta-rust/blob/328334d9d31241d1d29eb754c5c102d5b0e002ab/classes/rust-bin.bbclass#L5
 
 # rustc documents --remap-path-prefix as the supported way to rewrite build paths in emitted diagnostics, debug info, and macro expansions.
 # mirror trick above with path remaps so the binary doesn't keep references to ${WORKDIR}, ${S}, or the builder's cargo home
@@ -56,12 +56,12 @@ python do_unpack:append() {
     shutil.copytree(source_dir, reproducible_source_dir, symlinks=True)
 }
 
-# inherit cargo has its own do_install that installs the secluso_camera_hub binary into /usr/bin. thus, we append
+# inherit cargo has its own do_install that installs the secluso_toggle binary into /usr/bin. thus, we append
 do_install:append() {
     install -d ${D}/${systemd_unitdir}/system
     install -m 0644 ${UNPACKDIR}/secluso_toggle.service ${D}/${systemd_unitdir}/system
 }
 
 # https://docs.yoctoproject.org/dev/ref-manual/classes.html#cargo-update-recipe-crates
-# Generate new one: `bitbake -c update_crates secluso-camera-hub` from project root
+# Generate new one: `bitbake -c update_crates secluso-toggle` from project root
 require ${BPN}-crates.inc

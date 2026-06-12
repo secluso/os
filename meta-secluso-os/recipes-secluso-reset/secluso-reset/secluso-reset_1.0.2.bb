@@ -56,12 +56,12 @@ python do_unpack:append() {
     shutil.copytree(source_dir, reproducible_source_dir, symlinks=True)
 }
 
-# inherit cargo has its own do_install that installs the secluso_camera_hub binary into /usr/bin. thus, we append
+# inherit cargo has its own do_install that installs the secluso_reset binary into /usr/bin. thus, we append
 do_install:append() {
     install -d ${D}/${systemd_unitdir}/system
     install -m 0644 ${UNPACKDIR}/secluso_reset.service ${D}/${systemd_unitdir}/system
 }
 
 # https://docs.yoctoproject.org/dev/ref-manual/classes.html#cargo-update-recipe-crates
-# Generate new one: `bitbake -c update_crates secluso-camera-hub` from project root
+# Generate new one: `bitbake -c update_crates secluso-reset` from project root
 require ${BPN}-crates.inc
