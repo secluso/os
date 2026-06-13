@@ -169,6 +169,7 @@ local_conf_header:
     # Ensure the ov5647 & imx219 overlays are built and deployed to /boot/overlays/
     KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/ov5647.dtbo"
     KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/imx219.dtbo"
+    KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/imx708.dtbo"
 
     # Ensure the kernel modules are installed into the image. Needed to properly load in the camera into libcamera
     # Not all kernel-modules need to be included for proper operation.
