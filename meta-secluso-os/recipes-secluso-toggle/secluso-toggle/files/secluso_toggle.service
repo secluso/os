@@ -1,0 +1,27 @@
+[Unit]
+Description=secluso_toggle
+RequiresMountsFor=/home
+RequiresMountsFor=/provision
+RequiresMountsFor=/data
+
+# TODO: Do we need the network before using this? Does it matter?
+# TODO: In what order should this be put online? Does it need to be before/after the camera hub?
+# https://systemd.io/NETWORK_ONLINE/
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/data
+# fail fast if secrets or binary missing
+ExecStartPre=/usr/bin/test -x /usr/bin/secluso-toggle
+ExecStartPre=/usr/bin/test -r /provision/camera_secret
+ExecStartPre=/usr/bin/test -r /provision/wifi_password
+
+ExecStart=/usr/bin/secluso-toggle
+Environment="RUST_LOG=info"
+Environment="SECLUSO_USE_PROVISION=1"
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
