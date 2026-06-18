@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 # This is our own repository (set to an immutable commit)
 SRC_URI = "git://github.com/secluso/core.git;nobranch=1;protocol=https"
-SRCREV = "7bcbb4e4785fddab7f309b9535b29b98d54136fc"
+SRCREV = "09ee868c815f89e2de3a1c7ab138912b0a372afd"
 
 # Cargo fingerprints local path crates using their absolute source path
 # Thus, we copy the workspace to a canonical location before compiling.
