@@ -158,6 +158,9 @@ local_conf_header:
     # Not all kernel-modules need to be included for proper operation.
     # TODO: Remove unnecesary kernel modules
     IMAGE_INSTALL:append = " kmod i2c-tools kernel-modules"
+    
+    # Microphone-related.
+    IMAGE_INSTALL:append = " alsa-utils alsa-state opus-tools"
 
     # Referenced from https://hub.mender.io/t/how-to-configure-networking-using-systemd-in-yocto-project/1097
     # This installs the necessary firmware to connect to WiFi. See LICENSE_FLAGS_ACCEPTED for a relevant discussion.
