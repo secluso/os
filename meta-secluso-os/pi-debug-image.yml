@@ -118,7 +118,7 @@ local_conf_header:
     # meta-raspberrypi sets WKS_FILE with a weak assignment (?=), so we don't need a force override
     # wks is a custom configuration script used by the wic tool to define the partitioning layout
     # override theirs with our modified version
-    WKS_FILE:raspberrypi0-2w-64 = "sdcard-raspberrypi.wks"
+    WKS_FILE = "sdcard-raspberrypi.wks"
     
     # Ensure that /etc gets overlayed onto /data (this won't conflict with the camera_hub as they use directories)
     OVERLAYFS_ETC_MOUNT_POINT = "/data"
@@ -167,13 +167,16 @@ local_conf_header:
     ENABLE_CAMERA = "0"
     ENABLE_I2C = "1"
     # Ensure the ov5647 & imx219 overlays are built and deployed to /boot/overlays/
-    KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/ov5647.dtbo"
-    KERNEL_DEVICETREE:append:raspberrypi0-2w-64 = " overlays/imx219.dtbo"
+    KERNEL_DEVICETREE:append = " overlays/ov5647.dtbo"
+    KERNEL_DEVICETREE:append = " overlays/imx219.dtbo"
 
     # Ensure the kernel modules are installed into the image. Needed to properly load in the camera into libcamera
     # Not all kernel-modules need to be included for proper operation.
     # TODO: Remove unnecesary kernel modules
     IMAGE_INSTALL:append = " kmod i2c-tools kernel-modules"
+    
+    # Microphone-related.
+    IMAGE_INSTALL:append = " alsa-utils alsa-state opus-tools"
 
     # Referenced from https://hub.mender.io/t/how-to-configure-networking-using-systemd-in-yocto-project/1097
     # This installs the necessary firmware to connect to WiFi. See LICENSE_FLAGS_ACCEPTED for a relevant discussion.

@@ -167,6 +167,8 @@ SRC_URI += " \
     crate://crates.io/ocb3/0.1.0 \
     crate://crates.io/once_cell/1.21.4 \
     crate://crates.io/opaque-debug/0.3.1 \
+    crate://crates.io/opusic-c/1.6.1 \
+    crate://crates.io/opusic-sys/0.7.3 \
     crate://crates.io/openssl-probe/0.2.1 \
     crate://crates.io/p256/0.13.2 \
     crate://crates.io/p384/0.13.1 \
@@ -534,6 +536,8 @@ SRC_URI[num-traits-0.2.19.sha256sum] = "071dfc062690e90b734c0b2273ce72ad0ffa95f0
 SRC_URI[ocb3-0.1.0.sha256sum] = "c196e0276c471c843dd5777e7543a36a298a4be942a2a688d8111cd43390dedb"
 SRC_URI[once_cell-1.21.4.sha256sum] = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 SRC_URI[opaque-debug-0.3.1.sha256sum] = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
+SRC_URI[opusic-c-1.6.1.sha256sum] = "89f8e9c909466f15e60277212cc4fec082c68a5e1c9f6e373eee716fec2fed47"
+SRC_URI[opusic-sys-0.7.3.sha256sum] = "2804e694ef0de3b4cbb254de565053b7cb48d3398df7fd60c6c62bed40c5372a"
 SRC_URI[openssl-probe-0.2.1.sha256sum] = "7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe"
 SRC_URI[p256-0.13.2.sha256sum] = "c9863ad85fa8f4460f9c48cb909d38a0d689dba1f6f6988a5e3e0d31071bcd4b"
 SRC_URI[p384-0.13.1.sha256sum] = "fe42f1670a52a47d448f14b6a5c61dd78fce51856e68edaa38f7ae3a46b8d6b6"

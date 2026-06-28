@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b769fddc23425484f6d001e49426c2ee"
 
 # This is our own repository (set to an immutable commit)
 SRC_URI = "git://github.com/secluso/core.git;nobranch=1;protocol=https"
-SRCREV = "7bcbb4e4785fddab7f309b9535b29b98d54136fc"
+SRCREV = "be2d83bb2a1731178e0a43d67a960515f20297c5"
 
 # Cargo fingerprints local path crates using their absolute source path
 # Thus, we copy the workspace to a canonical location before compiling.
@@ -37,6 +37,12 @@ CARGO_BUILD_FLAGS += "--features raspberry"
 RUSTFLAGS += " --remap-path-prefix=${WORKDIR}=/usr/src/debug/${PN}/${PV}"
 RUSTFLAGS += " --remap-path-prefix=${S}=/usr/src/debug/${PN}/${PV}/sources"
 RUSTFLAGS += " --remap-path-prefix=${CARGO_HOME}=cargo_home"
+
+# opusic-sys compiles bundled C sources via a cargo build script.
+# Rust path remaps alone are thus not enough to rewrite __FILE__ strings that would embed TMPDIR into the binary.
+CFLAGS += " -ffile-prefix-map=${WORKDIR}=/usr/src/debug/${PN}/${PV}"
+CFLAGS += " -ffile-prefix-map=${S}=/usr/src/debug/${PN}/${PV}/sources"
+CFLAGS += " -ffile-prefix-map=${CARGO_HOME}=cargo_home"
 
 # https://wiki.koansoftware.com/index.php/Add_a_systemd_service_file_into_a_Yocto_image
 SYSTEMD_AUTO_ENABLE = "enable"
