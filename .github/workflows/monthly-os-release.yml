@@ -1,0 +1,124 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Secluso, Inc.
+# Additional terms apply; see the NOTICE file in the repository root.
+
+name: Monthly OS Release
+
+# Monthly core workflow triggers this
+# - syncs the camera-hub recipe to the core release commit,
+# - builds the official Pi image,
+# - publishes the reproducible (decompressed) .wic as an asset on THIS repo's GitHub draft
+# - core gets that image's checksum into SHA256SUMS
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, e.g. 1.0.3 (tag will be v<version>)"
+        required: true
+      backend_sha:
+        description: "Backend (secluso/core) commit (pin camera hub recipe)"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: monthly-os-release
+  cancel-in-progress: false
+
+jobs:
+  image:
+    runs-on: blacksmith-32vcpu-ubuntu-2404
+    timeout-minutes: 420
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Yocto host dependencies + kas
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gawk wget git diffstat unzip texinfo gcc build-essential chrpath \
+            socat cpio python3 python3-pip python3-pexpect xz-utils debianutils \
+            iputils-ping python3-git python3-jinja2 python3-subunit zstd liblz4-tool \
+            file locales bzip2 rsync curl ca-certificates
+          sudo locale-gen en_US.UTF-8
+          pip3 install --user --break-system-packages kas
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Sync camera-hub recipe to the core commit
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ver="${{ github.event.inputs.version }}"
+          bsha="${{ github.event.inputs.backend_sha }}"
+          [[ "$ver" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Bad version '$ver'" >&2; exit 1; }
+          [[ "$bsha" =~ ^[0-9a-f]{7,40}$ ]] || { echo "Bad backend sha '$bsha'" >&2; exit 1; }
+
+          recipe_dir="meta-secluso-os/recipes-secluso-camera-hub/secluso-camera-hub"
+          old="$(find "$recipe_dir" -maxdepth 1 -name 'secluso-camera-hub_*.bb' | head -n 1)"
+          [[ -n "$old" ]] || { echo "camera-hub recipe not found" >&2; exit 1; }
+
+          # 1) pin SRCREV to the core commit
+          sed -i -E "s/^SRCREV = \"[0-9a-f]+\"/SRCREV = \"$bsha\"/" "$old"
+
+          # 2) rename the recipe to the release PV
+          new="$recipe_dir/secluso-camera-hub_${ver}.bb"
+          if [[ "$old" != "$new" ]]; then git mv "$old" "$new"; fi
+
+          # 3) regenerate the crate manifest from the new commit's Cargo.lock
+          cd meta-secluso-os
+          kas shell pi-official-image.yml -c "bitbake -c update_crates secluso-camera-hub"
+          cd ..
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(release): sync camera-hub to v$ver (core $bsha)"
+          git push origin "HEAD:${{ github.ref_name }}"
+          echo "SYNC_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Build official image
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cd meta-secluso-os
+          kas build pi-official-image.yml
+
+      - name: Stage the reproducible image
+        id: stage
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ver="${{ github.event.inputs.version }}"
+          bz="$(find meta-secluso-os/build/tmp/deploy/images -name '*.rootfs.wic.bz2' | head -n 1)"
+          [[ -n "$bz" ]] || { echo "No .wic.bz2 image produced" >&2; exit 1; }
+          bunzip2 -kf "$bz"
+          wic="${bz%.bz2}"
+          asset="secluso-pi-image-v${ver}.wic"
+          cp "$wic" "$asset"
+          sha256="$(sha256sum "$asset" | awk '{print $1}')"
+          echo "asset=$asset" >> "$GITHUB_OUTPUT"
+          echo "sha256=$sha256" >> "$GITHUB_OUTPUT"
+          echo "$asset  sha256=$sha256"
+
+      - name: Publish image to draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ver="${{ github.event.inputs.version }}"
+          tag="v$ver"
+          asset="${{ steps.stage.outputs.asset }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$asset" --clobber
+          else
+            gh release create "$tag" "$asset" \
+              --draft \
+              --target "$SYNC_SHA" \
+              --title "$tag" \
+              --notes "Reproducible Pi OS image for v$ver .. ${{ github.event.inputs.backend_sha }})."
+          fi
