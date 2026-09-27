@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Secluso, Inc.
+# Additional terms apply; see the NOTICE file in the repository root.
+
+# https://github.com/aws-actions/aws-codebuild-run-build/
+# https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
+# https://github.com/rpcme/meta-amp-benchmark/blob/34f661e503bd54fafa580186fd797ebd3227745d/buildspec.yml#L2
+
+# When this is started, we're at the root of the repository ("CODEBUILD_SRC_DIR") [https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html]
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      # https://pipx.pypa.io/stable/how-to/install-pipx/
+      - apt update
+      - apt install pipx
+      - pipx ensurepath
+      # https://kas.readthedocs.io/en/latest/userguide/getting-started.html
+      - pipx install kas
+  build:
+    commands:
+      - kas build pi-official-image.yml

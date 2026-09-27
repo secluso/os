@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Secluso, Inc.
+# Additional terms apply; see the NOTICE file in the repository root.
+
+name: Check Reproducibility of OS Images
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [labeled]
+
+concurrency:
+  group: os-repro-check-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-reproducible-os-images:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'verify-os-reproducible'
+    runs-on: blacksmith-32vcpu-ubuntu-2404
+    timeout-minutes: 360
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Yocto host dependencies + kas
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gawk wget git diffstat unzip texinfo gcc build-essential chrpath \
+            socat cpio python3 python3-pip python3-pexpect xz-utils debianutils \
+            iputils-ping python3-git python3-jinja2 python3-subunit zstd liblz4-tool \
+            file locales bzip2 rsync curl ca-certificates
+          sudo locale-gen en_US.UTF-8
+          pip3 install --user --break-system-packages kas
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Build official image
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cd meta-secluso-os
+          kas build pi-official-image.yml
+
+      - name: Hash the reproducible image
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bz="$(find meta-secluso-os/build/tmp/deploy/images -name '*.rootfs.wic.bz2' | head -n 1)"
+          [[ -n "$bz" ]] || { echo "No .wic.bz2 image produced" >&2; exit 1; }
+          bunzip2 -kf "$bz"
+          wic="${bz%.bz2}"
+          sha256sum "$wic"
